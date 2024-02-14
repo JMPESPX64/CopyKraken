@@ -43,18 +43,10 @@ tar -xzvf httpx.tar.gz
 sudo mv httpx /usr/local/bin/
 
 # Instalar nuclei
-curl -L -o nuclei.zip https://github.com/projectdiscovery/nuclei/releases/download/v2.5.4/nuclei_2.5.4_linux_amd64.zip
-unzip nuclei.zip
-sudo mv nuclei /usr/local/bin/
-rm nuclei.zip
-nuclei -update
+go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
 
 # Instalar crlfuzz
-cd ~/tools || exit
-git clone https://github.com/dwisiswant0/crlfuzz.git
-cd crlfuzz || exit
-go build cmd/crlfuzz/main.go
-sudo mv crlfuzz /usr/local/bin/
+GO111MODULE=on go install github.com/dwisiswant0/crlfuzz/cmd/crlfuzz@latest
 
 # Instalar subfinder
 curl -L -o subfinder.tar.gz https://github.com/projectdiscovery/subfinder/releases/download/v2.4.5/subfinder_2.4.5_linux_386.tar.gz
