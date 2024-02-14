@@ -1,75 +1,88 @@
 #!/bin/bash
-
-# Actualizar los repositorios e instalar paquetes esenciales
 sudo apt update
-sudo apt install -y tmux libcurl4-openssl-dev libssl-dev jq ruby-full build-essential libgmp-dev zlib1g-dev libffi-dev python-dev python-setuptools libldns-dev python3-pip python-pip git rename xargs chromium chromium-l10n golang libpcap-dev dnsutils curl nmap
+sudo aptget install -y tmux
+sudo apt-get install -y libcurl4-openssl-dev
+sudo apt-get install -y libssl-dev
+sudo apt-get install -y jq
+sudo apt-get install -y ruby-full
+sudo apt-get install -y libcurl4-openssl-dev libxml2 libxml2-dev libxslt1-dev ruby-dev build-essential libgmp-dev zlib1g-dev
+sudo apt-get install -y build-essential libssl-dev libffi-dev python-dev
+sudo apt-get install -y python-setuptools
+sudo apt-get install -y libldns-dev
+sudo apt-get install -y python3-pip
+sudo apt-get install -y python-pip
+sudo apt-get install -y python-dnspython
+sudo apt-get install -y git
+sudo apt-get install -y rename
+sudo apt-get install -y xargs
+sudo apt-get install -y chromium chromium-l10n
+sudo apt-get install -y golang
+apt install -y libpcap-dev
+apt install -y tmux
+apt install -y dnsutils
+apt install -y curl
+apt-get install -y nmap
+pip3 install dirsearch
 
-# Instalar herramientas de Python
-pip3 install dirsearch colored uro requests
+pip install colored
+pip3 install colored
+pip3 install uro
+pip3 install --break-system-packages uro
+pip3 install requests
 
-# Crear directorio de herramientas
-mkdir -p ~/tools
+mkdir /root/tools
 
-# Clonar y actualizar repositorios de herramientas
-cd ~/tools || exit
 git clone https://github.com/projectdiscovery/nuclei-templates
 nuclei -update-templates
 
-git clone https://github.com/udhos/update-golang
-cd update-golang || exit
+git clone https://github.com/udhos/update-golang /root/tools/update-golang
+cd update-golang
 sudo ./update-golang.sh
 
-git clone https://github.com/aboul3la/Sublist3r.git
-cd Sublist3r || exit
-pip install -r requirements.txt
+git clone https://github.com/aboul3la/Sublist3r.git /root/tools/Sublist3r
+cd /root/tools/Sublist3r*
+pip3 install -r requirements.txt
 
-git clone https://github.com/maurosoria/dirsearch.git
+git clone https://github.com/maurosoria/dirsearch.git /root/tools/dirsearch
 
-git clone https://github.com/rockysec/customscripts
+git clone https://github.com/rockysec/customscripts /root/tools/customscripts
 
-git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git
+git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git /root/tools/sqlmap
 
-git clone https://github.com/s0md3v/Corsy
+git clone https://github.com/s0md3v/Corsy /root/tools/Corsy
 
-git clone https://github.com/danielmiessler/SecLists.git
+git clone https://github.com/danielmiessler/SecLists.git /root/tools/SecLists
 
-cd SecLists/Discovery/DNS/ || exit
-head -n -14 dns-Jhaddix.txt > clean-jhaddix-dns.txt
+cd /root/tools/SecLists/Discovery/DNS/
+cat dns-Jhaddix.txt | head -n -14 > clean-jhaddix-dns.txt
 
-# Instalar httpx
-cd ~/tools || exit
-curl -L -o httpx.tar.gz https://github.com/projectdiscovery/httpx/releases/download/v1.0.3/httpx_1.0.3_linux_amd64.tar.gz
-tar -xzvf httpx.tar.gz
-sudo mv httpx /usr/local/bin/
+curl -L -O https://github.com/projectdiscovery/httpx/releases/download/v1.0.3/httpx_1.0.3_linux_amd64.tar.gz
+tar -xzvf httpx_1.0.3_linux_amd64.tar.gz
+mv httpx /usr/local/bin/
 
-# Instalar nuclei
-go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
+curl -L -O https://github.com/projectdiscovery/nuclei/releases/download/v2.5.4/nuclei_2.5.4_linux_amd64.zip
+unzip nuclei_2.5.4_linux_amd64.zip
+mv nuclei /usr/bin/
+git clone https://github.com/projectdiscovery/nuclei-templates
+nuclei -update
 
-# Instalar crlfuzz
-GO111MODULE=on go install github.com/dwisiswant0/crlfuzz/cmd/crlfuzz@latest
+git clone https://github.com/dwisiswant0/crlfuzz.git /root/tools/crlfuzz
+go build /root/tools/crlfuzz/cmd/crlfuzz/main.go
+mv /root/tools/crlfuzz/cmd/crlfuzz/crlfuzz /usr/bin/crlfuzz
 
-# Instalar subfinder
-curl -L -o subfinder.tar.gz https://github.com/projectdiscovery/subfinder/releases/download/v2.4.5/subfinder_2.4.5_linux_386.tar.gz
-tar -xzvf subfinder.tar.gz
-sudo mv subfinder /usr/local/bin/
-rm subfinder.tar.gz
+curl -L -O https://github.com/projectdiscovery/subfinder/releases/download/v2.4.5/subfinder_2.4.5_linux_386.tar.gz
+tar -xzvf subfinder_2.4.5_linux_386.tar.gz
+cp subfinder /usr/local/bin/
 
-# Configurar Gf-Patterns
-cd ~ || exit
-git clone https://github.com/1ndianl33t/Gf-Patterns
-mkdir -p ~/.gf
-mv ~/Gf-Patterns/*.json ~/.gf
+cd /root
+git clone https://github.com/1ndianl33t/Gf-Patterns /root/Gf-Patterns
+mkdir .gf
+mv /root/Gf-Patterns/*.json /root/.gf
 
-# Instalar herramientas de Go
-GO111MODULE=on go get -v github.com/tomnomnom/anew
-GO111MODULE=on go get -v github.com/tomnomnom/gf
-GO111MODULE=on go get -v github.com/tomnomnom/qsreplace
-GO111MODULE=on go get -v github.com/projectdiscovery/httpx/cmd/httpx
-GO111MODULE=on go get -v github.com/tomnomnom/waybackurls
-
-# Instalar Nuclei y actualizar las plantillas
-GO111MODULE=on go get -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei
+go install github.com/tomnomnom/anew@latest
+go install github.com/tomnomnom/gf@latest
+go install github.com/tomnomnom/qsreplace@latest
+go install github.com/projectdiscovery/httpx@latest
+go install github.com/tomnomnom/waybackurls@latest
 nuclei -update-templates
-
-# Copiar binarios instalados globalmente
-sudo cp ~/go/bin/* /usr/local/bin/
+cp /root/go/bin/* /usr/bin/
