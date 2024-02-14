@@ -69,10 +69,15 @@ mkdir -p ~/.gf
 mv ~/Gf-Patterns/*.json ~/.gf
 
 # Instalar herramientas de Go
-go install github.com/tomnomnom/anew@latest
-go install github.com/tomnomnom/gf@latest
-go install github.com/tomnomnom/qsreplace@latest
-go install github.com/projectdiscovery/httpx/cmd/httpx@latest
-go install github.com/tomnomnom/waybackurls@latest
+GO111MODULE=on go get -v github.com/tomnomnom/anew
+GO111MODULE=on go get -v github.com/tomnomnom/gf
+GO111MODULE=on go get -v github.com/tomnomnom/qsreplace
+GO111MODULE=on go get -v github.com/projectdiscovery/httpx/cmd/httpx
+GO111MODULE=on go get -v github.com/tomnomnom/waybackurls
+
+# Instalar Nuclei y actualizar las plantillas
+GO111MODULE=on go get -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei
 nuclei -update-templates
+
+# Copiar binarios instalados globalmente
 sudo cp ~/go/bin/* /usr/local/bin/
