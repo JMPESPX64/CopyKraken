@@ -33,11 +33,9 @@ pip3 install requests
 mkdir /root/tools
 
 git clone https://github.com/projectdiscovery/nuclei-templates
-nuclei -update-templates
 
 git clone https://github.com/udhos/update-golang /root/tools/update-golang
-cd update-golang
-sudo ./update-golang.sh
+sudo bash /root/tools/update-golang/update-golang.sh
 
 git clone https://github.com/aboul3la/Sublist3r.git /root/tools/Sublist3r
 cd /root/tools/Sublist3r*
@@ -65,6 +63,7 @@ unzip nuclei_2.5.4_linux_amd64.zip
 mv nuclei /usr/bin/
 git clone https://github.com/projectdiscovery/nuclei-templates
 nuclei -update
+nuclei -update-templates
 
 git clone https://github.com/dwisiswant0/crlfuzz.git /root/tools/crlfuzz
 go build /root/tools/crlfuzz/cmd/crlfuzz/main.go
@@ -79,10 +78,11 @@ git clone https://github.com/1ndianl33t/Gf-Patterns /root/Gf-Patterns
 mkdir .gf
 mv /root/Gf-Patterns/*.json /root/.gf
 
-go install github.com/tomnomnom/anew@latest
-go install github.com/tomnomnom/gf@latest
-go install github.com/tomnomnom/qsreplace@latest
-go install github.com/projectdiscovery/httpx@latest
-go install github.com/tomnomnom/waybackurls@latest
+GO111MODULE=on go get github.com/tomnomnom/anew@latest
+GO111MODULE=on go get github.com/tomnomnom/gf@latest
+GO111MODULE=on go get github.com/tomnomnom/qsreplace@latest
+GO111MODULE=on go get github.com/tomnomnom/httpx@latest
+GO111MODULE=on go get github.com/tomnomnom/waybackurls@latest
 nuclei -update-templates
-cp /root/go/bin/* /usr/bin/
+sudo cp /root/go/bin/* /usr/bin
+echo -e "\nHappy Hacking!\n"
