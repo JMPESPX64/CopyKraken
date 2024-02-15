@@ -242,6 +242,7 @@ if [ "$wayback" = true ]; then
 #echo "${green}Starting to check available data in wayback machine"
 waybackurls $domain > $directory_data/$domain/$foldername/wayback_tmp.txt
 cat $directory_data/$domain/$foldername/wayback_tmp.txt | sort -u | uro > $directory_data/$domain/$foldername/wayback.txt
+gf xss $directory_data/$domain/$foldername/wayback.txt | kxss > check_xss.txt
 rm $directory_data/$domain/$foldername/wayback_tmp.txt
 fi
 
