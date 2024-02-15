@@ -65,9 +65,9 @@ git clone https://github.com/projectdiscovery/nuclei-templates
 nuclei -update
 nuclei -update-templates
 
-git clone https://github.com/dwisiswant0/crlfuzz.git /root/tools/crlfuzz
-go build /root/tools/crlfuzz/cmd/crlfuzz/main.go
-mv /root/tools/crlfuzz/cmd/crlfuzz/crlfuzz /usr/bin/crlfuzz
+# Install crlfuzz
+git clone https://github.com/dwisiswant0/crlfuzz.git /root/tools/crlfuzz && cd /root/tools/crlfuzz && go build ./cmd/crlfuzz && mv crlfuzz /usr/bin
+
 
 curl -L -O https://github.com/projectdiscovery/subfinder/releases/download/v2.4.5/subfinder_2.4.5_linux_386.tar.gz
 tar -xzvf subfinder_2.4.5_linux_386.tar.gz
