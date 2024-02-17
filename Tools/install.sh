@@ -60,11 +60,7 @@ tar -xzvf httpx_1.0.3_linux_amd64.tar.gz
 mv httpx /usr/local/bin/
 
 # Install crlfuzz
-git clone https://github.com/dwisiswant0/crlfuzz.git /root/tools/crlfuzz
-cd /root/tools/crlfuzz
-go build cmd/crlfuzz/main.go 
-mv cmd/crlfuzz/crlfuzz /usr/bin/
-
+curl -sSfL https://git.io/crlfuzz | sh -s -- -b /usr/local/bin
 
 # Install subfinder
 curl -L -O https://github.com/projectdiscovery/subfinder/releases/download/v2.4.5/subfinder_2.4.5_linux_386.tar.gz
