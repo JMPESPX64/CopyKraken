@@ -10,12 +10,31 @@ channelSlack="YOUR_CHANNEL"
 directory_tools=~/tools
 directory_data=/root
 ssh_conection="user@ipadd:/folder" ##reemplazar user, ipaddr y folder por los datos de tu servidor repositorio de resultados de escaneo
+notify=true
 ########################################
 
 function notify {
-  message=`echo -ne "*Kraken*:\n *$1*" | sed 's/[^a-zA-Z 0-9*_]/\\\\&/g'`
-  curl -s -X POST "https://api.telegram.org/bot$telegram_api_key/sendMessage" -d chat_id="$telegram_chat_id" -d text="$message" -d parse_mode="MarkdownV2" &> /dev/null
+    if [ "$notify" = true ]
+    then
+        if [ $(($(date +%s) - lastNotified)) -le 3 ]
+        then
+            echo "[!] Notifying too quickly, sleeping to avoid skipped notifications..."
+            sleep 3
+        fi
+
+        # Format string to escape special characters and send message through Telegram API.
+        if [ -z "$DOMAIN" ]
+        then
+            message=`echo -ne "*BugBountyScanner:* $1" | sed 's/[^a-zA-Z 0-9*_]/\\\\&/g'`
+        else
+            message=`echo -ne "*BugBountyScanner [$DOMAIN]:* $1" | sed 's/[^a-zA-Z 0-9*_]/\\\\&/g'`
+        fi
+    
+        curl -s -X POST "https://api.telegram.org/bot$telegram_api_key/sendMessage" -d chat_id="$telegram_chat_id" -d text="$message" -d parse_mode="MarkdownV2" &> /dev/null
+        lastNotified=$(date +%s)
+    fi
 }
+
 
 
 function logo {
