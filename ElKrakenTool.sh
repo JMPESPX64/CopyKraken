@@ -14,25 +14,8 @@ notify=true
 ########################################
 
 function notify {
-    if [ "$notify" = true ]
-    then
-        if [ $(($(date +%s) - lastNotified)) -le 3 ]
-        then
-            echo "[!] Notifying too quickly, sleeping to avoid skipped notifications..."
-            sleep 3
-        fi
-
-        # Format string to escape special characters and send message through Telegram API.
-        if [ -z "$DOMAIN" ]
-        then
-            message=`echo -ne "*Kraken:* $1" | sed 's/[^a-zA-Z 0-9*_]/\\\\&/g'`
-        else
-            message=`echo -ne "*Kraken [$DOMAIN]:* $1" | sed 's/[^a-zA-Z 0-9*_]/\\\\&/g'`
-        fi
-    
-        curl -s -X POST "https://api.telegram.org/bot$telegram_api_key/sendMessage" -d chat_id="$telegram_chat_id" -d text="$message" -d parse_mode="MarkdownV2" &> /dev/null
-        lastNotified=$(date +%s)
-    fi
+  message=`echo -ne "*Kraken:* ${green}$1${reset}" | sed 's/[^a-zA-Z 0-9*_]/\\\\&/g'`
+  curl -s -X POST "https://api.telegram.org/bot$telegram_api_key/sendMessage" -d chat_id="$telegram_chat_id" -d text="$message" -d parse_mode="MarkdownV2" &> /dev/null
 }
 
 
@@ -246,7 +229,6 @@ foldername=scan-$todate
   mkdir $directory_data/$domain/$foldername/nmap
 
 ##############################################################################Discovery START############################################################################
-  curl -F token=$tokenSlack -F channel=$channelSlack -F text="El runner a iniciado el scan en $domain!" https://slack.com/api/chat.postMessage
   echo "${green}Recon started in Subdomain $domain ${reset}"
   notify "Recon started in Subdomain $domain ${reset}"
   echo "Listing subdomains using subfinder..."
@@ -259,7 +241,7 @@ foldername=scan-$todate
   cat $directory_data/$domain/$foldername/$domain.txt | httpx >> $directory_data/$domain/$foldername/urllist.csv
   cp $directory_data/$domain/$foldername/$domain.txt $directory_data/$domain/$foldername/subdomain.csv
   echo  "${yellow}Total of $(wc -l $directory_data/$domain/$foldername/urllist.csv | awk '{print $1}') live subdomains were found${reset}"
-  notify "${yellow} Total of $(wc -l $directory_data/$domain/$foldername/urllist.csv | awk '{print $1}') live subdomains were found${reset}"
+  notify "${yellow} Total of $(wc -l < $directory_data/$domain/$foldername/urllist.csv | awk '{print $1}') live subdomains were found${reset}"
 fi
 
 
@@ -285,8 +267,8 @@ echo "${green}Starting to check Open Redirect"
 notify "Starting to check Open Redirect"
 waybackurls $domain | grep -a -i \=http | qsreplace 'http://evil.com' | while read host do;do curl -s -L $host -I| echo -e "$host" ;done >> $directory_data/$domain/$foldername/openredirect.csv 2>/dev/null
 gf xss $directory_data/$domain/$foldername/wayback.txt > $directory_data/$domain/$foldername/check_xss.txt
-notify "Posibles Open Redirects -> $(wc -l $directory_data/$domain/$foldername/openredirect.csv) results"
-notify "Check for XSS with Kxss -> $(wc -l $directory_data/$domain/$foldername/check_xss.txt) results"
+notify "Posibles Open Redirects -> $(wc -l < $directory_data/$domain/$foldername/openredirect.csv) results"
+notify "Check for XSS with Kxss -> $(wc -l < $directory_data/$domain/$foldername/check_xss.txt) results"
 fi
 
 ##############################################################################nuclei START############################################################################
@@ -334,7 +316,7 @@ if [ "$nuclei_vuln" = true ]; then
 echo "{green}Starting to check vulnerabilities"
 notify "Starting to check vulnerabilities"
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t vulnerabilities | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
-notify "Vulnerability scanning is complete -> $(wc -l $directory_data/$domain/$foldername/nuclei.csv) results"
+notify "Vulnerability scanning is complete -> $(wc -l < $directory_data/$domain/$foldername/nuclei.csv) results"
 fi
 
 
@@ -343,7 +325,7 @@ if [ "$cors" = true ]; then
 echo "{green}Starting to check CORS vulnerabilities"
 notify "Staring to check CORS vulnerabilities"
 python3 $directory_tools/Corsy/corsy.py -i $directory_data/$domain/$foldername/urllist.csv -o $directory_data/$domain/$foldername/cors.json
-notify "Cors scan has finished -> $(wc -l $directory_data/$domain/$foldername/cors.json) results"
+notify "Cors scan has finished -> $(wc -l < $directory_data/$domain/$foldername/cors.json) results"
 fi
 
 
@@ -364,7 +346,7 @@ crlfuzz -l $directory_data/$domain/$foldername/wayback.txt -o $directory_data/$d
 cat $directory_data/$domain/$foldername/crlfuzz_urllist.csv > $directory_data/$domain/$foldername/crlfuzz.txt
 cat $directory_data/$domain/$foldername/crlfuzz_wayback.txt >> $directory_data/$domain/$foldername/crlfuzz.txt
 rm $directory_data/$domain/$foldername/crlfuzz_urllist.csv  $directory_data/$domain/$foldername/crlfuzz_wayback.txt
-notify "CRLF recon finished -> $(wc -l $directory_data/$domain/$foldername/crlfuzz_urllist.txt) results"
+notify "CRLF recon finished -> $(wc -l < $directory_data/$domain/$foldername/crlfuzz_urllist.txt) results"
 fi
 
 ##############################################################################Output START############################################################################
