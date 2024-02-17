@@ -11,7 +11,7 @@ sudo apt install -y python-setuptools
 sudo apt install -y libldns-dev
 sudo apt install -y python3-pip
 sudo apt install -y python-pip
-sudo apt install -y python-dnspython
+sudo apt install -y python3-dnspython
 sudo apt install -y git
 sudo apt install -y rename
 sudo apt install -y xargs
@@ -54,24 +54,32 @@ git clone https://github.com/danielmiessler/SecLists.git /root/tools/SecLists
 cd /root/tools/SecLists/Discovery/DNS/
 cat dns-Jhaddix.txt | head -n -14 > clean-jhaddix-dns.txt
 
+# Install httpx
 curl -L -O https://github.com/projectdiscovery/httpx/releases/download/v1.0.3/httpx_1.0.3_linux_amd64.tar.gz
 tar -xzvf httpx_1.0.3_linux_amd64.tar.gz
 mv httpx /usr/local/bin/
 
+# Install crlfuzz
 git clone https://github.com/dwisiswant0/crlfuzz.git /root/tools/crlfuzz
-go build /root/tools/crlfuzz/cmd/crlfuzz/main.go
-mv /root/tools/crlfuzz/cmd/crlfuzz/crlfuzz /usr/bin/crlfuzz
+cd /root/tools/crlfuzz
+go build cmd/crlfuzz/main.go 
+mv cmd/crlfuzz/crlfuzz /usr/bin/
 
+
+# Install subfinder
 curl -L -O https://github.com/projectdiscovery/subfinder/releases/download/v2.4.5/subfinder_2.4.5_linux_386.tar.gz
 tar -xzvf subfinder_2.4.5_linux_386.tar.gz
 cp subfinder /usr/local/bin/
 
 # Install nuclei
-git clone https://github.com/projectdiscovery/nuclei /root/tools/nuclei
-cd /root/tools/nuclei/cmd/nuclei
-go build .
-mv /root/tools/nuclei/cmd/nuclei/nuclei /usr/bin/ 
+cd /root/tools/
+curl -L -O https://github.com/projectdiscovery/nuclei/releases/download/v3.1.10/nuclei_3.1.10_linux_amd64.zip
+unzip nuclei_3.1.10_linux_amd64.zip
+mv nuclei /usr/bin/
+git clone https://github.com/projectdiscovery/nuclei-templates
+nuclei -update
 
+# Install Gf-Patterns
 cd /root
 git clone https://github.com/1ndianl33t/Gf-Patterns /root/Gf-Patterns
 mkdir .gf
