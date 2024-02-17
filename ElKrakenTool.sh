@@ -13,7 +13,7 @@ ssh_conection="user@ipadd:/folder" ##reemplazar user, ipaddr y folder por los da
 ########################################
 
 function notify {
-  message=`echo -ne "*Kraken:* $1" | sed 's/[^a-zA-Z 0-9*_]/\\\\&/g'`
+  message=`echo -ne "## Kraken:\n *$1*" | sed 's/[^a-zA-Z 0-9*_]/\\\\&/g'`
   curl -s -X POST "https://api.telegram.org/bot$telegram_api_key/sendMessage" -d chat_id="$telegram_chat_id" -d text="$message" -d parse_mode="MarkdownV2" &> /dev/null
 }
 
@@ -239,8 +239,8 @@ foldername=scan-$todate
   echo $domain >> $directory_data/$domain/$foldername/$domain.txt
   cat $directory_data/$domain/$foldername/$domain.txt | httpx >> $directory_data/$domain/$foldername/urllist.csv
   cp $directory_data/$domain/$foldername/$domain.txt $directory_data/$domain/$foldername/subdomain.csv
-  echo  "${yellow}Total of $(wc -l $directory_data/$domain/$foldername/urllist.csv | awk '{print $1}') live subdomains were found${reset}"
-  notify "${yellow} Total of $(wc -l < $directory_data/$domain/$foldername/urllist.csv | awk '{print $1}') live subdomains were found${reset}"
+  echo  "Total of $(wc -l $directory_data/$domain/$foldername/urllist.csv | awk '{print $1}') live subdomains were found$"
+  notify "Total of $(wc -l < $directory_data/$domain/$foldername/urllist.csv | awk '{print $1}') live subdomains were found"
 fi
 
 
@@ -352,5 +352,5 @@ fi
 if [ "$output" = true ]; then
  scp -o  StrictHostKeyChecking=no -r ~/$domain $ssh_conection
  echo "{yellow}The recopiled data was moved to the Master node"
-notify "Finished recon on *$(cat ~/tools/domains.txt)* domains."
+notify "Finished recon on $(cat ~/tools/domains.txt) domains."
 fi
