@@ -254,7 +254,7 @@ foldername=scan-$todate
   subfinder -all -silent -d $domain -oI -nW > $directory_data/$domain/$foldername/subdomain_ip.csv
   cat $directory_data/$domain/$foldername/subdomain_ip.csv | sed "s/[,].*//" | sort -u >> $directory_data/$domain/$foldername/$domain.txt
   echo "${green}Probing for live hosts..."
-  notify "${green} Probin for live hosts..."
+  notify "Probing for live hosts..."
   echo $domain >> $directory_data/$domain/$foldername/$domain.txt
   cat $directory_data/$domain/$foldername/$domain.txt | httpx >> $directory_data/$domain/$foldername/urllist.csv
   cp $directory_data/$domain/$foldername/$domain.txt $directory_data/$domain/$foldername/subdomain.csv
