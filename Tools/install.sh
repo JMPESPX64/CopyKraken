@@ -58,20 +58,19 @@ curl -L -O https://github.com/projectdiscovery/httpx/releases/download/v1.0.3/ht
 tar -xzvf httpx_1.0.3_linux_amd64.tar.gz
 mv httpx /usr/local/bin/
 
-curl -L -O https://github.com/projectdiscovery/nuclei/releases/download/v2.5.4/nuclei_2.5.4_linux_amd64.zip
-unzip nuclei_2.5.4_linux_amd64.zip
-mv nuclei /usr/bin/
-git clone https://github.com/projectdiscovery/nuclei-templates
-nuclei -update
-nuclei -update-templates
-
-# Install crlfuzz
-git clone https://github.com/dwisiswant0/crlfuzz.git /root/tools/crlfuzz && cd /root/tools/crlfuzz && go build ./cmd/crlfuzz && mv crlfuzz /usr/bin
-
+git clone https://github.com/dwisiswant0/crlfuzz.git /root/tools/crlfuzz
+go build /root/tools/crlfuzz/cmd/crlfuzz/main.go
+mv /root/tools/crlfuzz/cmd/crlfuzz/crlfuzz /usr/bin/crlfuzz
 
 curl -L -O https://github.com/projectdiscovery/subfinder/releases/download/v2.4.5/subfinder_2.4.5_linux_386.tar.gz
 tar -xzvf subfinder_2.4.5_linux_386.tar.gz
 cp subfinder /usr/local/bin/
+
+# Install nuclei
+git clone https://github.com/projectdiscovery/nuclei /root/tools/nuclei
+cd /root/tools/nuclei/cmd/nuclei && go build -ldflags "-s -w" .
+mv /root/tools/nuclei/cmd/nuclei/nuclei /usr/bin/nuclei
+
 
 cd /root
 git clone https://github.com/1ndianl33t/Gf-Patterns /root/Gf-Patterns
