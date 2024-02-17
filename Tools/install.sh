@@ -1,27 +1,27 @@
 #!/bin/bash
 sudo apt update
-sudo aptget install -y tmux
-sudo apt-get install -y libcurl4-openssl-dev
-sudo apt-get install -y libssl-dev
-sudo apt-get install -y jq
-sudo apt-get install -y ruby-full
-sudo apt-get install -y libcurl4-openssl-dev libxml2 libxml2-dev libxslt1-dev ruby-dev build-essential libgmp-dev zlib1g-dev
-sudo apt-get install -y build-essential libssl-dev libffi-dev python-dev
-sudo apt-get install -y python-setuptools
-sudo apt-get install -y libldns-dev
-sudo apt-get install -y python3-pip
-sudo apt-get install -y python-pip
-sudo apt-get install -y python-dnspython
-sudo apt-get install -y git
-sudo apt-get install -y rename
-sudo apt-get install -y xargs
-sudo apt-get install -y chromium chromium-l10n
-sudo apt-get install -y golang
+sudo apt-get install -y tmux
+sudo apt install -y libcurl4-openssl-dev
+sudo apt install -y libssl-dev
+sudo apt install -y jq
+sudo apt install -y ruby-full
+sudo apt install -y libcurl4-openssl-dev libxml2 libxml2-dev libxslt1-dev ruby-dev build-essential libgmp-dev zlib1g-dev
+sudo apt install -y build-essential libssl-dev libffi-dev python-dev
+sudo apt install -y python-setuptools
+sudo apt install -y libldns-dev
+sudo apt install -y python3-pip
+sudo apt install -y python-pip
+sudo apt install -y python-dnspython
+sudo apt install -y git
+sudo apt install -y rename
+sudo apt install -y xargs
+sudo apt install -y chromium chromium-l10n
+sudo apt install -y golang
 apt install -y libpcap-dev
 apt install -y tmux
 apt install -y dnsutils
 apt install -y curl
-apt-get install -y nmap
+apt install -y nmap
 pip3 install dirsearch
 
 pip install colored
@@ -68,9 +68,9 @@ cp subfinder /usr/local/bin/
 
 # Install nuclei
 git clone https://github.com/projectdiscovery/nuclei /root/tools/nuclei
-cd /root/tools/nuclei/cmd/nuclei && go build -ldflags "-s -w" .
-mv /root/tools/nuclei/cmd/nuclei/nuclei /usr/bin/nuclei
-
+cd /root/tools/nuclei/cmd/nuclei
+go build .
+mv /root/tools/nuclei/cmd/nuclei/nuclei /usr/bin/ 
 
 cd /root
 git clone https://github.com/1ndianl33t/Gf-Patterns /root/Gf-Patterns
