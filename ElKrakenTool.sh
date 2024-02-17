@@ -10,11 +10,10 @@ channelSlack="YOUR_CHANNEL"
 directory_tools=~/tools
 directory_data=/root
 ssh_conection="user@ipadd:/folder" ##reemplazar user, ipaddr y folder por los datos de tu servidor repositorio de resultados de escaneo
-notify=true
 ########################################
 
 function notify {
-  message=`echo -ne "*Kraken:* ${green}$1${reset}" | sed 's/[^a-zA-Z 0-9*_]/\\\\&/g'`
+  message=`echo -ne "*Kraken:* $1" | sed 's/[^a-zA-Z 0-9*_]/\\\\&/g'`
   curl -s -X POST "https://api.telegram.org/bot$telegram_api_key/sendMessage" -d chat_id="$telegram_chat_id" -d text="$message" -d parse_mode="MarkdownV2" &> /dev/null
 }
 
