@@ -10,6 +10,7 @@ channelSlack="YOUR_CHANNEL"
 directory_tools=~/tools
 directory_data=/root
 ssh_conection="user@ipadd:/folder" ##reemplazar user, ipaddr y folder por los datos de tu servidor repositorio de resultados de escaneo
+notify=true
 ########################################
 
 function notify {
