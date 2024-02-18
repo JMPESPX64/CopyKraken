@@ -247,19 +247,15 @@ foldername=scan-$todate
   mkdir $directory_data/$domain/$foldername/nmap
 
 ##############################################################################Discovery START############################################################################
-  echo "${green}Recon started in Subdomain $domain ${reset}"
   notify "Recon started in Subdomain $domain"
-  echo "Listing subdomains using subfinder..."
   notify "Listing subdomains using subfinder..."
   subfinder -all -silent -d $domain -oI -nW > $directory_data/$domain/$foldername/subdomain_ip.csv
   cat  $directory_data/$domain/$foldername/subdomain_ip.csv | grep -vE "support.cybavo.com|converge.circle.com|w3.cybavo.com|media.circle.com|engineering.circle.com|support.invest.circle.com|ccf.cybavo.com|developers.circle.com|support.poloniexus.circle.com|support.circle.com|ragic.cybavo.com|sample.circle.com|status.circle.com|support.usdc.circle.com" | sponge $directory_data/$domain/$foldername/subdomain_ip.csv
   cat $directory_data/$domain/$foldername/subdomain_ip.csv | sed "s/[,].*//" | sort -u >> $directory_data/$domain/$foldername/$domain.txt
-  echo "${green}Probing for live hosts..."
   notify "Probing for live hosts..."
   echo $domain >> $directory_data/$domain/$foldername/$domain.txt
   cat $directory_data/$domain/$foldername/$domain.txt | httpx >> $directory_data/$domain/$foldername/urllist.csv
   cp $directory_data/$domain/$foldername/$domain.txt $directory_data/$domain/$foldername/subdomain.csv
-  echo  "Total of $(wc -l $directory_data/$domain/$foldername/urllist.csv | awk '{print $1}') live subdomains were found"
   notify "Total of $(wc -l < $directory_data/$domain/$foldername/urllist.csv | awk '{print $1}') live subdomains were found"
 fi
 
@@ -276,13 +272,12 @@ fi
 
 ##############################################################################Dirsearch START############################################################################
 if [ "$dirsearch" = true ]; then
-echo "${green}Starting to check discovery with dirsearch"
+notify "Starting to check discovery with dirsearch"
 dirsearch -w ~/tools/SecLists/Discovery/Web-Content/directory-list-2.3-medium.txt -e $dirsearchExtensions -t 50 -exclude 403,401,404,400 -l $directory_data/$domain/$foldername/urllist.csv --deep-recursive -R 4 --crawl --full-url  --no-color --format=csv -o $directory_data/$domain/$foldername/dirsearch.csv
 fi
 
 ##############################################################################OpenRedirect START############################################################################
 if [ "$or" = true ]; then
-echo "${green}Starting to check Open Redirect"
 notify "Starting to check Open Redirect"
 waybackurls $domain | grep -a -i \=http | qsreplace 'http://evil.com' | while read host do;do curl -s -L $host -I| echo -e "$host" ;done >> $directory_data/$domain/$foldername/openredirect.csv 2>/dev/null
 gf xss $directory_data/$domain/$foldername/wayback.txt > $directory_data/$domain/$foldername/check_xss.txt
@@ -292,47 +287,39 @@ fi
 
 ##############################################################################nuclei START############################################################################
 if [ "$nuclei_cves" = true ]; then
-echo "{green}Starting to check cves"
+notify "Starting with nuclei"
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t cves | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' > $directory_data/$domain/$foldername/nuclei.csv
 fi
 
 if [ "$nuclei_dlogins" = true ]; then
-echo "{green}Starting to check default logins"
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t default-logins | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
 fi
 
 if [ "$nuclei_panels" = true ]; then
-echo "{green}Starting to check exposed panels"
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t exposed-panels | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
 fi
 
 if [ "$nuclei_exposures" = true ]; then
-echo "{green}Starting to check exposed information"
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t exposures | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
 fi
 
 if [ "$nuclei_misc" = true ]; then
-echo "{green}Starting to check miscellaneous"
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t miscellaneous | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
 fi
 
 if [ "$nuclei_misconfig" = true ]; then
-echo "{green}Starting to check misconfiguration"
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t misconfiguration | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
 fi
 
 if [ "$nuclei_takeovers" = true ]; then
-echo "{green}Starting to check DNS Takeovers"
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t takeovers | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
 fi
 
 if [ "$nuclei_tech" = true ]; then
-echo "{green}Starting to check technologies"
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t technologies | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
 fi
 
 if [ "$nuclei_vuln" = true ]; then
-echo "{green}Starting to check vulnerabilities"
 notify "Starting to check vulnerabilities"
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t vulnerabilities | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
 notify "Vulnerability scanning is complete -> $(wc -l < $directory_data/$domain/$foldername/nuclei.csv) results"
@@ -341,7 +328,6 @@ fi
 
 ##############################################################################CORS START############################################################################
 if [ "$cors" = true ]; then
-echo "{green}Starting to check CORS vulnerabilities"
 notify "Staring to check CORS vulnerabilities"
 python3 $directory_tools/Corsy/corsy.py -i $directory_data/$domain/$foldername/urllist.csv -o $directory_data/$domain/$foldername/cors.json
 notify "Cors scan has finished -> $(wc -l < $directory_data/$domain/$foldername/cors.json) results"
@@ -350,7 +336,6 @@ fi
 
 ##############################################################################Port Scan START############################################################################
 if [ "$nmap" = true ]; then
-echo "{green}Starting to check Open Ports"
 notify "Staring to check Open Ports"
 bash $directory_tools/customscripts/loop_nmap.sh $directory_data/$domain/$foldername/subdomain.csv
 mv nmap_full_* $directory_data/$domain/$foldername/nmap/
@@ -358,7 +343,6 @@ fi
 
 ##############################################################################CRLF START############################################################################
 if [ "$crlf" = true ]; then
-echo "{green}Starting to check CRLF"
 notify "{green}Starting to check CRLF{green}"
 crlfuzz -l $directory_data/$domain/$foldername/urllist.csv -o $directory_data/$domain/$foldername/crlfuzz_urllist.csv
 crlfuzz -l $directory_data/$domain/$foldername/wayback.txt -o $directory_data/$domain/$foldername/crlfuzz_wayback.txt
@@ -371,7 +355,6 @@ fi
 ##############################################################################Output START############################################################################
 if [ "$output" = true ]; then
  scp -o  StrictHostKeyChecking=no -r ~/$domain $ssh_conection
- echo "{yellow}The recopiled data was moved to the Master node"
 notify "Finished recon on $(cat ~/tools/domains.txt) domains."
 fi
 
