@@ -252,6 +252,7 @@ foldername=scan-$todate
   echo "Listing subdomains using subfinder..."
   notify "Listing subdomains using subfinder..."
   subfinder -all -silent -d $domain -oI -nW > $directory_data/$domain/$foldername/subdomain_ip.csv
+  cat  $directory_data/$domain/$foldername/subdomain_ip.csv | grep -vE "support.cybavo.com|converge.circle.com|w3.cybavo.com|media.circle.com|engineering.circle.com|support.invest.circle.com|ccf.cybavo.com|developers.circle.com|support.poloniexus.circle.com|support.circle.com|ragic.cybavo.com|sample.circle.com|status.circle.com|support.usdc.circle.com" | sponge $directory_data/$domain/$foldername/subdomain_ip.csv
   cat $directory_data/$domain/$foldername/subdomain_ip.csv | sed "s/[,].*//" | sort -u >> $directory_data/$domain/$foldername/$domain.txt
   echo "${green}Probing for live hosts..."
   notify "Probing for live hosts..."
