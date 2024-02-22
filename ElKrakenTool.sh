@@ -321,7 +321,7 @@ fi
 if [ "$nuclei_vuln" = true ]; then
 notify "Starting to check vulnerabilities"
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t vulnerabilities | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
-notify "Vulnerability scanning is complete -> $(wc -l < $directory_data/$domain/$foldername/nuclei.csv) results"
+notify "Vulnerability scanning is complete -> $(cat $directory_data/$domain/$foldername/nuclei.csv | grep -v ",info," | wc -l) results"
 fi
 
 
