@@ -11,6 +11,7 @@ directory_tools=~/tools
 directory_data=/root
 ssh_conection="user@ipadd:/folder" ##reemplazar user, ipaddr y folder por los datos de tu servidor repositorio de resultados de escaneo
 notify=true
+proxy_url="http://$PROXY_USERNAME:$PROXY_PASSWORD@45.88.101.118:5432"
 ########################################
 
 function notify {
@@ -287,40 +288,40 @@ fi
 ##############################################################################nuclei START############################################################################
 if [ "$nuclei_cves" = true ]; then
 notify "Starting with nuclei"
-nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t cves | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' > $directory_data/$domain/$foldername/nuclei.csv
+nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t cves -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' > $directory_data/$domain/$foldername/nuclei.csv
 fi
 
 if [ "$nuclei_dlogins" = true ]; then
-nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t default-logins | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
+nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t default-logins -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
 fi
 
 if [ "$nuclei_panels" = true ]; then
-nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t exposed-panels | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
+nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t exposed-panels -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
 fi
 
 if [ "$nuclei_exposures" = true ]; then
-nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t exposures | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
+nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t exposures -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
 fi
 
 if [ "$nuclei_misc" = true ]; then
-nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t miscellaneous | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
+nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t miscellaneous -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
 fi
 
 if [ "$nuclei_misconfig" = true ]; then
-nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t misconfiguration | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
+nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t misconfiguration -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
 fi
 
 if [ "$nuclei_takeovers" = true ]; then
-nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t takeovers | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
+nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t takeovers -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
 fi
 
 if [ "$nuclei_tech" = true ]; then
-nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t technologies | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
+nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t technologies -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
 fi
 
 if [ "$nuclei_vuln" = true ]; then
 notify "Starting to check vulnerabilities"
-nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t vulnerabilities | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
+nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t vulnerabilities -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
 notify "Vulnerability scanning is complete -> $(cat $directory_data/$domain/$foldername/nuclei.csv | grep -v ",info," | wc -l) results"
 fi
 
