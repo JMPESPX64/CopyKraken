@@ -279,7 +279,7 @@ fi
 ##############################################################################OpenRedirect START############################################################################
 if [ "$or" = true ]; then
 notify "Starting to check Open Redirect"
-waybackurls $domain | grep -a -i \=http | qsreplace 'http://evil.com' | while read host do;do curl -s -L $host -I| echo -e "$host" ;done >> $directory_data/$domain/$foldername/openredirect.csv 2>/dev/null
+cat $directory_data/$domain/$foldername/wayback.txt | grep -a -i \=http | qsreplace 'http://evil.com' | while read host do; echo -e "$host" ;done >> $directory_data/$domain/$foldername/openredirect.csv 2>/dev/null
 gf xss $directory_data/$domain/$foldername/wayback.txt > $directory_data/$domain/$foldername/check_xss.txt
 notify "Posibles Open Redirects -> $(wc -l < $directory_data/$domain/$foldername/openredirect.csv) results"
 notify "Check for XSS with Kxss -> $(wc -l < $directory_data/$domain/$foldername/check_xss.txt) results"
