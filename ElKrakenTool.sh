@@ -249,8 +249,8 @@ foldername=scan-$todate
 
 ##############################################################################Discovery START############################################################################
   notify "Listing subdomains using subfinder..."
-  subfinder -all -silent -d $domain -pc /root/.config/provider-config.yaml > $directory_data/$domain/$foldername/subdomain_ip.csv
-  cat $directory_data/$domain/$foldername/subdomain_ip.csv | sed "s/[,].*//" | sort -u >> $directory_data/$domain/$foldername/$domain.txt
+  subfinder -all -silent -d $domain > $directory_data/$domain/$foldername/subdomain_ip.csv
+  cp $directory_data/$domain/$foldername/subdomain_ip.csv >> $directory_data/$domain/$foldername/$domain.txt
   notify "Probing for live hosts..."
   echo $domain >> $directory_data/$domain/$foldername/$domain.txt
   cat $directory_data/$domain/$foldername/$domain.txt | httpx >> $directory_data/$domain/$foldername/urllist.csv
