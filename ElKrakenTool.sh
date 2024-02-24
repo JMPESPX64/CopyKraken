@@ -248,9 +248,8 @@ foldername=scan-$todate
   mkdir $directory_data/$domain/$foldername/nmap
 
 ##############################################################################Discovery START############################################################################
-  notify "Recon started in Subdomain $domain"
   notify "Listing subdomains using subfinder..."
-  subfinder -all -silent -d $domain -oI -nW > $directory_data/$domain/$foldername/subdomain_ip.csv
+  subfinder -all -silent -d $domain -config /root/.config/provider_config.yaml > $directory_data/$domain/$foldername/subdomain_ip.csv
   cat $directory_data/$domain/$foldername/subdomain_ip.csv | sed "s/[,].*//" | sort -u >> $directory_data/$domain/$foldername/$domain.txt
   notify "Probing for live hosts..."
   echo $domain >> $directory_data/$domain/$foldername/$domain.txt
@@ -280,9 +279,10 @@ fi
 if [ "$or" = true ]; then
 notify "Starting to check Open Redirect"
 cat $directory_data/$domain/$foldername/wayback.txt | grep -a -i \=http | qsreplace 'http://evil.com' | while read host do; echo -e "$host" ;done >> $directory_data/$domain/$foldername/openredirect.csv 2>/dev/null
-gf xss $directory_data/$domain/$foldername/wayback.txt > $directory_data/$domain/$foldername/check_xss.txt
-notify "Posibles Open Redirects -> $(wc -l < $directory_data/$domain/$foldername/openredirect.csv) results"
-notify "Check for XSS with Kxss -> $(wc -l < $directory_data/$domain/$foldername/check_xss.txt) results"
+notify "Starting to check XSS with Dalfox"
+gf xss $directory_data/$domain/$foldername/wayback.txt > $directory_data/$domain/$foldername/check_xss.txt | dalfox pipe --silence --no-color --no-spinner --skip-bav --skip-mining-dom --skip-mining-dict --proxy "$proxy_url" --only-poc r --ignore-return 302,404,403 -w 100 2>>/tmp/dalfox_log.txt > $directory_data/$domain/$foldername/posible_xss.txt
+notify "Dalfox is over"
+notify "Posible -> $(wc -l < $directory_data/$domain/$foldername/posible_xss.txt) results ; Posible Open redirects $(wc -l $directory_data/$domain/$foldername/openredirect.csv) results"
 fi
 
 ##############################################################################nuclei START############################################################################
@@ -322,7 +322,7 @@ fi
 if [ "$nuclei_vuln" = true ]; then
 notify "Starting to check vulnerabilities"
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t vulnerabilities -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
-notify "Vulnerability scanning is complete -> $(cat $directory_data/$domain/$foldername/nuclei.csv | grep -v ",info," | wc -l) results"
+notify "Vulnerability scanning is complete ->\n $(cat $directory_data/$domain/$foldername/nuclei.csv | grep -v ",info,")"
 fi
 
 
@@ -343,7 +343,7 @@ fi
 
 ##############################################################################CRLF START############################################################################
 if [ "$crlf" = true ]; then
-notify "{green}Starting to check CRLF{green}"
+notify "Starting to check CRLF"
 crlfuzz -l $directory_data/$domain/$foldername/urllist.csv -o $directory_data/$domain/$foldername/crlfuzz_urllist.csv
 crlfuzz -l $directory_data/$domain/$foldername/wayback.txt -o $directory_data/$domain/$foldername/crlfuzz_wayback.txt
 cat $directory_data/$domain/$foldername/crlfuzz_urllist.csv > $directory_data/$domain/$foldername/crlfuzz.txt
