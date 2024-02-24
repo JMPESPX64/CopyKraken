@@ -266,7 +266,10 @@ if [ "$wayback" = true ]; then
 #echo "${green}Starting to check available data in wayback machine"
 notify "Staring to check available data in wayback machine"
 waybackurls $domain > $directory_data/$domain/$foldername/wayback_tmp.txt
+sleep 1
 gau $domain 2>/dev/null | anew wayback.txt
+notify "Running GAU..."
+sleep 1
 cat $directory_data/$domain/$foldername/wayback_tmp.txt | sort -u | uro > $directory_data/$domain/$foldername/wayback.txt
 rm $directory_data/$domain/$foldername/wayback_tmp.txt
 fi
