@@ -280,7 +280,7 @@ if [ "$or" = true ]; then
 notify "Starting to check Open Redirect"
 cat $directory_data/$domain/$foldername/wayback.txt | grep -a -i \=http | qsreplace 'http://evil.com' | while read host do; echo -e "$host" ;done >> $directory_data/$domain/$foldername/openredirect.csv 2>/dev/null
 notify "Starting to check XSS with Dalfox"
-gf xss $directory_data/$domain/$foldername/wayback.txt > $directory_data/$domain/$foldername/check_xss.txt | dalfox pipe --silence --no-color --no-spinner --skip-bav --skip-mining-dom --skip-mining-dict --proxy "$proxy_url" --only-poc r --ignore-return 302,404,403 -w 100 2>>/tmp/dalfox_log.txt > $directory_data/$domain/$foldername/posible_xss.txt
+cat $directory_data/$domain/$foldername/wayback.txt | gf xss | sed 's/=.*/=/' | dalfox pipe --silence --no-color --no-spinner --skip-bav --skip-mining-dom --skip-mining-dict --proxy "$proxy_url" --only-poc r --ignore-return 302,404,403 -w 100 2>>/tmp/dalfox_log.txt > $directory_data/$domain/$foldername/posible_xss.txt
 notify "Dalfox is over"
 notify "Posible -> $(wc -l < $directory_data/$domain/$foldername/posible_xss.txt) results ; Posible Open redirects $(wc -l $directory_data/$domain/$foldername/openredirect.csv) results"
 fi
