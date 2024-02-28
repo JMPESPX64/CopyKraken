@@ -265,12 +265,16 @@ fi
 if [ "$wayback" = true ]; then
 #echo "${green}Starting to check available data in wayback machine"
 notify "Staring to check available data in wayback machine"
-waybackurls $domain > $directory_data/$domain/$foldername/wayback_tmp.txt
-sleep 1
-notify "Running GAU..."
-sleep 1
+if [ $(wc -l < $domain) -gt 1 ] ; then 
+    for value in $domain ; do 
+        waybackurls $value >> $directory_data/$domain/$foldername/wayback_tmp.txt
+        sleep 1
+    done
+else 
+    waybackurls $domain >> $directory_data/$domain/$foldername/waback_tmp.txt
+    sleep 1
+fi
 cat $directory_data/$domain/$foldername/wayback_tmp.txt | sort -u | uro > $directory_data/$domain/$foldername/wayback.txt
-gau $domain 2>/dev/null | anew $directory_data/$domain/$foldername/wayback.txt
 rm $directory_data/$domain/$foldername/wayback_tmp.txt
 fi
 
@@ -284,16 +288,22 @@ fi
 if [ "$or" = true ]; then
 notify "Starting to check Open Redirect"
 cat $directory_data/$domain/$foldername/wayback.txt | grep -a -i \=http | qsreplace 'http://evil.com' | while read host do; echo -e "$host" ;done >> $directory_data/$domain/$foldername/openredirect.csv 2>/dev/null
-notify "Starting to check XSS with Dalfox"
-cat $directory_data/$domain/$foldername/wayback.txt | gf xss | sed 's/=.*/=/' | dalfox pipe --silence --no-color --no-spinner --skip-bav --skip-mining-dom --skip-mining-dict --proxy "$proxy_url" --only-poc r --ignore-return 302,404,403 -w 100 2>>/tmp/dalfox_log.txt > $directory_data/$domain/$foldername/posible_xss.txt
-notify "Dalfox is over"
-notify "Posible -> $(wc -l < $directory_data/$domain/$foldername/posible_xss.txt) results ; Posible Open redirects $(wc -l $directory_data/$domain/$foldername/openredirect.csv) results"
+sleep 1
+notify "Testing XSS"
+gf xss $directory_data/$domain/$foldername/wayback.txt | kxss > posible_xss.txt
+
 fi
 
 ##############################################################################nuclei START############################################################################
 if [ "$nuclei_cves" = true ]; then
 notify "Starting with nuclei"
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t cves -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' > $directory_data/$domain/$foldername/nuclei.csv
+fi
+
+if [ "$nuclei_vuln" = true ]; then
+notify "Starting to check vulnerabilities"
+nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t vulnerabilities -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
+notify "Vulnerability scanning is complete ->\n $(cat $directory_data/$domain/$foldername/nuclei.csv | grep -v ",info,")"
 fi
 
 if [ "$nuclei_dlogins" = true ]; then
@@ -323,13 +333,6 @@ fi
 if [ "$nuclei_tech" = true ]; then
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t technologies -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
 fi
-
-if [ "$nuclei_vuln" = true ]; then
-notify "Starting to check vulnerabilities"
-nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t vulnerabilities -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
-notify "Vulnerability scanning is complete ->\n $(cat $directory_data/$domain/$foldername/nuclei.csv | grep -v ",info,")"
-fi
-
 
 ##############################################################################CORS START############################################################################
 if [ "$cors" = true ]; then
