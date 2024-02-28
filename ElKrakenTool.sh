@@ -249,9 +249,7 @@ foldername=scan-$todate
 
 ##############################################################################Discovery START############################################################################
   notify "Listing subdomains using subfinder..."
-  echo $domain >> $directory_data/$domain/$foldername/domains_tmp.txt
-  subfinder -all -silent -d $(cat $directory_data/$domain/$foldername/domains_tmp.txt) > $directory_data/$domain/$foldername/subdomain_ip.csv
-  rm $directory_data/$domain/$foldername/domains_tmp.txt
+  subfinder -all -silent -d $domain > $directory_data/$domain/$foldername/subdomain_ip.csv
   sleep 1
   cp $directory_data/$domain/$foldername/subdomain_ip.csv $directory_data/$domain/$foldername/$domain.txt
   notify "Probing for live hosts..."
