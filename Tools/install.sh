@@ -88,6 +88,7 @@ GO111MODULE=on go get github.com/tomnomnom/httpx@latest
 GO111MODULE=on go get github.com/tomnomnom/waybackurls@latest
 GO111MODULE=on go get github.com/hahwul/dalfox/v2@latest
 GO111MODULE=on go get github.com/lc/gau/v2/cmd/gau@latest
+GO111MODULE=on go get github.com/Emoe/kxss@latest
 nuclei -update-templates
 sudo cp /root/go/bin/* /usr/bin
 echo -e "\nHappy Hacking!\n"
