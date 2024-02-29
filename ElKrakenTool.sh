@@ -248,13 +248,13 @@ foldername=scan-$todate
   mkdir $directory_data/$domain/$foldername/nmap
 
 ##############################################################################Discovery START############################################################################
-  notify "Listing subdomains using subfinder..."
+  notify "Listing subdomains using subfinder on $domain..."
   subfinder -all -silent -d "$domain" > $directory_data/$domain/$foldername/subdomain_ip.csv
   notify "Se acaba de ejecutar este comando: subfinder -all -silent -d $domain"
   sleep 1
   cp $directory_data/$domain/$foldername/subdomain_ip.csv $directory_data/$domain/$foldername/$domain.txt
   notify "Probing for live hosts..."
-  echo "$domain" | tr ',' '\n' | sed '/^\s*$/d' >> $directory_data/$domain/$foldername/$domain.txt
+  echo "$domain" >> $directory_data/$domain/$foldername/$domain.txt
   cat $directory_data/$domain/$foldername/$domain.txt | httpx >> $directory_data/$domain/$foldername/urllist.csv
   cp $directory_data/$domain/$foldername/$domain.txt $directory_data/$domain/$foldername/subdomain.csv
   notify "Total of $(wc -l < $directory_data/$domain/$foldername/urllist.csv | awk '{print $1}') live subdomains were found"
