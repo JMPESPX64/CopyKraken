@@ -250,6 +250,7 @@ foldername=scan-$todate
 ##############################################################################Discovery START############################################################################
   notify "Listing subdomains using subfinder..."
   subfinder -all -silent -d "$domain" > $directory_data/$domain/$foldername/subdomain_ip.csv
+  notify "Se acaba de ejecutar este comando: subfinder -all -silent -d $domain"
   sleep 1
   cp $directory_data/$domain/$foldername/subdomain_ip.csv $directory_data/$domain/$foldername/$domain.txt
   notify "Probing for live hosts..."
