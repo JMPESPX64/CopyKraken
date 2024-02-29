@@ -250,7 +250,6 @@ foldername=scan-$todate
 ##############################################################################Discovery START############################################################################
   notify "Listing subdomains using subfinder on $domain..."
   subfinder -all -silent -d "$domain" > $directory_data/$domain/$foldername/subdomain_ip.csv
-  notify "Se acaba de ejecutar este comando: subfinder -all -silent -d $domain"
   sleep 1
   cp $directory_data/$domain/$foldername/subdomain_ip.csv $directory_data/$domain/$foldername/$domain.txt
   notify "Probing for live hosts..."
@@ -266,10 +265,8 @@ fi
 if [ "$wayback" = true ]; then
 #echo "${green}Starting to check available data in wayback machine"
 notify "Staring to check available data in wayback machine"
-for value in $(echo $domain | tr ',' '\n' | sed '/^\s*$/d') ; do 
-    waybackurls $value >> $directory_data/$domain/$foldername/wayback_tmp.txt
-    sleep 1
-done
+waybackurls $value >> $directory_data/$domain/$foldername/wayback_tmp.txt
+sleep 1
 cat $directory_data/$domain/$foldername/wayback_tmp.txt | sort -u | uro > $directory_data/$domain/$foldername/wayback.txt
 rm $directory_data/$domain/$foldername/wayback_tmp.txt
 fi
