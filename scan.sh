@@ -8,6 +8,6 @@ if [ ! -f "$domains_file" ]; then
 fi
 
 while IFS= read -r domain; do
-    bash kraken.sh -domain "$domain" -recon -wayback -nuclei_cves -nuclei_dlogins -nuclei_panels -nuclei_exposures -nuclei_misc -nuclei_misconfig -nuclei_takeovers -nuclei_tech -nuclei_vuln -cors -nmap -crlf -or -output
+    bash ~/tools/ElKraken/ElKrakenTool.sh -domain "$domain" -recon -wayback -nuclei_cves -nuclei_dlogins -nuclei_panels -nuclei_exposures -nuclei_misc -nuclei_misconfig -nuclei_takeovers -nuclei_tech -nuclei_vuln -cors -nmap -crlf -or -output
     sleep 5
 done < "$domains_file"
