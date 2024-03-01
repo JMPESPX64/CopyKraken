@@ -22,6 +22,7 @@ apt install -y tmux
 apt install -y dnsutils
 apt install -y curl
 apt install -y nmap
+apt install dos2unix
 pip3 install dirsearch
 
 pip install colored
