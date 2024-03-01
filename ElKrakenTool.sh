@@ -272,10 +272,10 @@ rm $directory_data/$domain/$foldername/wayback_tmp.txt
 fi
 
 ##############################################################################Dirsearch START############################################################################
-if [ "$dirsearch" = true ]; then
-notify "Starting to check discovery with dirsearch"
-dirsearch -w ~/tools/SecLists/Discovery/Web-Content/directory-list-2.3-medium.txt -e $dirsearchExtensions -t 50 -exclude 403,401,404,400 -l $directory_data/$domain/$foldername/urllist.csv --deep-recursive -R 4 --crawl --full-url  --no-color --format=csv -o $directory_data/$domain/$foldername/dirsearch.csv
-fi
+#if [ "$dirsearch" = true ]; then
+#notify "Starting to check discovery with dirsearch"
+#dirsearch -w ~/tools/SecLists/Discovery/Web-Content/directory-list-2.3-medium.txt -e $dirsearchExtensions -t 50 -exclude 403,401,404,400 -l $directory_data/$domain/$foldername/urllist.csv --deep-recursive -R 4 --crawl --full-url  --no-color --format=csv -o $directory_data/$domain/$foldername/dirsearch.csv
+#fi
 
 ##############################################################################OpenRedirect START############################################################################
 if [ "$or" = true ]; then
@@ -284,7 +284,6 @@ cat $directory_data/$domain/$foldername/wayback.txt | grep -a -i \=http | qsrepl
 sleep 1
 notify "Testing XSS"
 gf xss $directory_data/$domain/$foldername/wayback.txt | kxss > posible_xss.txt
-
 fi
 
 ##############################################################################nuclei START############################################################################
