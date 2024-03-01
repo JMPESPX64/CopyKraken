@@ -268,7 +268,6 @@ waybackurls $domain >> $directory_data/$domain/$foldername/wayback_tmp.txt
 sleep 1
 cat $directory_data/$domain/$foldername/wayback_tmp.txt | sort -u | uro > $directory_data/$domain/$foldername/wayback.txt
 rm $directory_data/$domain/$foldername/wayback_tmp.txt
-notify "Anterior a open redirect"
 ##############################################################################Dirsearch START############################################################################
 #if [ "$dirsearch" = true ]; then
 #notify "Starting to check discovery with dirsearch"
@@ -278,8 +277,8 @@ notify "Anterior a open redirect"
 ##############################################################################OpenRedirect START############################################################################
 
 notify "Starting to check Open Redirect"
-cat $directory_data/$domain/$foldername/wayback.txt | grep -a -i \=http | qsreplace 'http://evil.com' | while read host do; echo -e "$host" ;done >> $directory_data/$domain/$foldername/openredirect.csv 2>/dev/null
-sleep 1
+cat $directory_data/$domain/$foldername/wayback.txt | grep -a -i \=http | qsreplace 'http://evil.com' | while read host do;do curl -s -L $host -I| echo -e "$host" ;done >> $directory_data/$domain/$foldername/openredirect.csv 2>/dev/null
+sleep 2
 notify "Testing XSS"
 gf xss $directory_data/$domain/$foldername/wayback.txt | kxss > posible_xss.txt
 
