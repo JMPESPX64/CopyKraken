@@ -44,8 +44,6 @@ pip3 install -r requirements.txt
 
 git clone https://github.com/maurosoria/dirsearch.git /root/tools/dirsearch
 
-git clone https://github.com/rockysec/customscripts /root/tools/customscripts
-
 git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git /root/tools/sqlmap
 
 git clone https://github.com/s0md3v/Corsy /root/tools/Corsy
