@@ -262,14 +262,12 @@ fi
 
 
 ##############################################################################wayback START############################################################################
-if [ "$wayback" = true ]; then
 #echo "${green}Starting to check available data in wayback machine"
 notify "Staring to check available data in wayback machine"
 waybackurls $domain >> $directory_data/$domain/$foldername/wayback_tmp.txt
 sleep 1
 cat $directory_data/$domain/$foldername/wayback_tmp.txt | sort -u | uro > $directory_data/$domain/$foldername/wayback.txt
 rm $directory_data/$domain/$foldername/wayback_tmp.txt
-fi
 notify "Anterior a open redirect"
 ##############################################################################Dirsearch START############################################################################
 #if [ "$dirsearch" = true ]; then
@@ -278,71 +276,66 @@ notify "Anterior a open redirect"
 #fi
 
 ##############################################################################OpenRedirect START############################################################################
-if [ "$or" = true ]; then
+
 notify "Starting to check Open Redirect"
 cat $directory_data/$domain/$foldername/wayback.txt | grep -a -i \=http | qsreplace 'http://evil.com' | while read host do; echo -e "$host" ;done >> $directory_data/$domain/$foldername/openredirect.csv 2>/dev/null
 sleep 1
 notify "Testing XSS"
 gf xss $directory_data/$domain/$foldername/wayback.txt | kxss > posible_xss.txt
-fi
 
 ##############################################################################nuclei START############################################################################
-if [ "$nuclei_cves" = true ]; then
+# Nuclei CVE's
 notify "Starting with nuclei"
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t cves -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' 2>/tmp/error.log > $directory_data/$domain/$foldername/nuclei.csv
-fi
 
-if [ "$nuclei_vuln" = true ]; then
+# Nuclei vulns
+
 notify "Starting to check vulnerabilities"
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t vulnerabilities -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
 notify "Vulnerability scanning is complete ->\n $(cat $directory_data/$domain/$foldername/nuclei.csv | grep -v ",info,")"
-fi
 
-if [ "$nuclei_dlogins" = true ]; then
+# Nuclei logins
+
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t default-logins -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
-fi
 
-if [ "$nuclei_panels" = true ]; then
+# Nuclei panels
+
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t exposed-panels -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
-fi
 
-if [ "$nuclei_exposures" = true ]; then
+# Nuclei data exposure
+
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t exposures -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
-fi
 
-if [ "$nuclei_misc" = true ]; then
+# Nuclei misc
+
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t miscellaneous -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
-fi
 
-if [ "$nuclei_misconfig" = true ]; then
+# Nuclei misconfiguration
+
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t misconfiguration -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
-fi
 
-if [ "$nuclei_takeovers" = true ]; then
+# Nuclei subdomain takeover
+
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t takeovers -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
-fi
 
-if [ "$nuclei_tech" = true ]; then
+# Nucle technologies
+
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t technologies -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
-fi
 
 ##############################################################################CORS START############################################################################
-if [ "$cors" = true ]; then
+
 notify "Staring to check CORS vulnerabilities"
 python3 $directory_tools/Corsy/corsy.py -i $directory_data/$domain/$foldername/urllist.csv -o $directory_data/$domain/$foldername/cors.json
 notify "Cors scan has finished -> $(wc -l < $directory_data/$domain/$foldername/cors.json) results"
-fi
-
 
 ##############################################################################Port Scan START############################################################################
-if [ "$nmap" = true ]; then
+
 notify "Staring to check Open Ports"
 bash $directory_tools/customscripts/loop_nmap.sh $directory_data/$domain/$foldername/subdomain.csv
 mv nmap_full_* $directory_data/$domain/$foldername/nmap/
-fi
 
 ##############################################################################CRLF START############################################################################
-if [ "$crlf" = true ]; then
+
 notify "Starting to check CRLF"
 crlfuzz -l $directory_data/$domain/$foldername/urllist.csv -o $directory_data/$domain/$foldername/crlfuzz_urllist.csv
 crlfuzz -l $directory_data/$domain/$foldername/wayback.txt -o $directory_data/$domain/$foldername/crlfuzz_wayback.txt
@@ -350,11 +343,10 @@ cat $directory_data/$domain/$foldername/crlfuzz_urllist.csv > $directory_data/$d
 cat $directory_data/$domain/$foldername/crlfuzz_wayback.txt >> $directory_data/$domain/$foldername/crlfuzz.txt
 rm $directory_data/$domain/$foldername/crlfuzz_urllist.csv  $directory_data/$domain/$foldername/crlfuzz_wayback.txt
 notify "CRLF recon finished -> $(wc -l < $directory_data/$domain/$foldername/crlfuzz_urllist.txt) results"
-fi
 
 ##############################################################################Output START############################################################################
-if [ "$output" = true ]; then
- scp -o  StrictHostKeyChecking=no -r ~/$domain $ssh_conection
+
+scp -o  StrictHostKeyChecking=no -r ~/$domain $ssh_conection
 notify "Finished recon on $(cat ~/tools/domains.txt) domains."
-fi
+
 
