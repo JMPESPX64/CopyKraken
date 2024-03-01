@@ -270,7 +270,7 @@ sleep 1
 cat $directory_data/$domain/$foldername/wayback_tmp.txt | sort -u | uro > $directory_data/$domain/$foldername/wayback.txt
 rm $directory_data/$domain/$foldername/wayback_tmp.txt
 fi
-
+notify "Anterior a open redirect"
 ##############################################################################Dirsearch START############################################################################
 #if [ "$dirsearch" = true ]; then
 #notify "Starting to check discovery with dirsearch"
@@ -289,7 +289,7 @@ fi
 ##############################################################################nuclei START############################################################################
 if [ "$nuclei_cves" = true ]; then
 notify "Starting with nuclei"
-nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t cves -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' > $directory_data/$domain/$foldername/nuclei.csv
+nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t cves -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' 2>/tmp/error.log > $directory_data/$domain/$foldername/nuclei.csv
 fi
 
 if [ "$nuclei_vuln" = true ]; then
