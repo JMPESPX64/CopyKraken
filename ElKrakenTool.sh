@@ -249,6 +249,7 @@ foldername=scan-$todate
 
 ##############################################################################Discovery START############################################################################
   notify "Listing subdomains using subfinder on $domain..."
+  sleep 1
   subfinder -all -silent -d "$domain" > $directory_data/$domain/$foldername/subdomain_ip.csv
   sleep 1
   cp $directory_data/$domain/$foldername/subdomain_ip.csv $directory_data/$domain/$foldername/$domain.txt
@@ -268,6 +269,7 @@ waybackurls $domain >> $directory_data/$domain/$foldername/wayback_tmp.txt
 sleep 1
 cat $directory_data/$domain/$foldername/wayback_tmp.txt | sort -u | uro > $directory_data/$domain/$foldername/wayback.txt
 rm $directory_data/$domain/$foldername/wayback_tmp.txt
+notify "Results of waybackurls -> $(wc -l < $directory_data/$domain/$foldername/wayback.txt)"
 ##############################################################################Dirsearch START############################################################################
 #if [ "$dirsearch" = true ]; then
 #notify "Starting to check discovery with dirsearch"
@@ -281,10 +283,11 @@ cat $directory_data/$domain/$foldername/wayback.txt | grep -a -i \=http | qsrepl
 sleep 2
 notify "Testing XSS"
 gf xss $directory_data/$domain/$foldername/wayback.txt | kxss >> $directory_data/$domain/$foldername/posible_xss.txt
+notify "Posible xss results -> $(wc -l < $directory_data/$domain/$foldername/posible_xss.txt)"
 
 ##############################################################################nuclei START############################################################################
 # Nuclei CVE's
-notify "Starting with nuclei"
+notify "Starting with nuclei on $domain"
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t cves -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' 2>/tmp/error.log > $directory_data/$domain/$foldername/nuclei.csv
 
 # Nuclei vulns
@@ -341,11 +344,11 @@ crlfuzz -l $directory_data/$domain/$foldername/wayback.txt -o $directory_data/$d
 cat $directory_data/$domain/$foldername/crlfuzz_urllist.csv > $directory_data/$domain/$foldername/crlfuzz.txt
 cat $directory_data/$domain/$foldername/crlfuzz_wayback.txt >> $directory_data/$domain/$foldername/crlfuzz.txt
 rm $directory_data/$domain/$foldername/crlfuzz_urllist.csv  $directory_data/$domain/$foldername/crlfuzz_wayback.txt
-notify "CRLF recon finished -> $(wc -l < $directory_data/$domain/$foldername/crlfuzz_urllist.txt) results"
+notify "CRLF recon finished -> $(wc -l < $directory_data/$domain/$foldername/crlfuzz_urllist.csv) results"
 
 ##############################################################################Output START############################################################################
 
 scp -o  StrictHostKeyChecking=no -r ~/$domain $ssh_conection
-notify "Finished recon on $(cat ~/tools/domains.txt) domains."
+notify "Finished recon on $domain."
 
 
