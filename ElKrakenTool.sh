@@ -344,7 +344,7 @@ crlfuzz -l $directory_data/$domain/$foldername/wayback.txt -o $directory_data/$d
 cat $directory_data/$domain/$foldername/crlfuzz_urllist.csv > $directory_data/$domain/$foldername/crlfuzz.txt
 cat $directory_data/$domain/$foldername/crlfuzz_wayback.txt >> $directory_data/$domain/$foldername/crlfuzz.txt
 rm $directory_data/$domain/$foldername/crlfuzz_urllist.csv  $directory_data/$domain/$foldername/crlfuzz_wayback.txt
-notify "CRLF recon finished -> $(wc -l < $directory_data/$domain/$foldername/crlfuzz_urllist.csv) results"
+notify "CRLF recon finished -> $(wc -l < $directory_data/$domain/$foldername/crlfuzz.txt) results"
 
 ##############################################################################Output START############################################################################
 
