@@ -294,7 +294,7 @@ nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t cves -p "
 
 notify "Starting to check vulnerabilities"
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t vulnerabilities -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
-notify "Vulnerability scanning is complete ->\n $(cat $directory_data/$domain/$foldername/nuclei.csv | grep -v ",info,")"
+notify "Vulnerability scanning is complete -> $(cat $directory_data/$domain/$foldername/nuclei.csv | grep -v ',info,')"
 
 # Nuclei logins
 
