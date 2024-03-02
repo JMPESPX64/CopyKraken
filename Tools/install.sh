@@ -35,6 +35,8 @@ mkdir /root/tools
 
 git clone https://github.com/projectdiscovery/nuclei-templates
 
+git clone https://github.com/rockysec/customscripts /root/tools/customscripts
+
 git clone https://github.com/udhos/update-golang /root/tools/update-golang
 sudo bash /root/tools/update-golang/update-golang.sh
 
