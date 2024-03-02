@@ -64,9 +64,9 @@ mv httpx /usr/local/bin/
 curl -sSfL https://git.io/crlfuzz | sh -s -- -b /usr/local/bin
 
 # Install subfinder
-curl -L -O https://github.com/projectdiscovery/subfinder/releases/download/v2.4.5/subfinder_2.4.5_linux_386.tar.gz
-tar -xzvf subfinder_2.4.5_linux_386.tar.gz
-cp subfinder /usr/local/bin/
+#curl -L -O https://github.com/projectdiscovery/subfinder/releases/download/v2.4.5/subfinder_2.4.5_linux_386.tar.gz
+#tar -xzvf subfinder_2.4.5_linux_386.tar.gz
+#cp subfinder /usr/local/bin/
 
 # Install nuclei
 cd /root/tools/
@@ -90,6 +90,7 @@ GO111MODULE=on go get github.com/tomnomnom/waybackurls@latest
 GO111MODULE=on go get github.com/hahwul/dalfox/v2@latest
 GO111MODULE=on go get github.com/lc/gau/v2/cmd/gau@latest
 GO111MODULE=on go get github.com/Emoe/kxss@latest
+GO111MODULE=on go get github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
 nuclei -update-templates
 sudo cp /root/go/bin/* /usr/bin
 echo -e "\nHappy Hacking!\n"
