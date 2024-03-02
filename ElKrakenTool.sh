@@ -280,7 +280,7 @@ notify "Starting to check Open Redirect"
 cat $directory_data/$domain/$foldername/wayback.txt | grep -a -i \=http | qsreplace 'http://evil.com' | while read host do;do curl -s -L $host -I| echo -e "$host" ;done >> $directory_data/$domain/$foldername/openredirect.csv 2>/dev/null
 sleep 2
 notify "Testing XSS"
-gf xss $directory_data/$domain/$foldername/wayback.txt | kxss > posible_xss.txt
+gf xss $directory_data/$domain/$foldername/wayback.txt | kxss >> $directory_data/$domain/$foldername/posible_xss.txt
 
 ##############################################################################nuclei START############################################################################
 # Nuclei CVE's
