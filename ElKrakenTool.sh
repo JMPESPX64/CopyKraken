@@ -328,7 +328,7 @@ nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t technolog
 
 notify "Staring to check CORS vulnerabilities"
 python3 $directory_tools/Corsy/corsy.py -i $directory_data/$domain/$foldername/urllist.csv -o $directory_data/$domain/$foldername/cors.json
-notify "Cors scan has finished -> $(wc -l < $directory_data/$domain/$foldername/cors.json) results"
+notify "Cors scan has finished $(wc -l < $directory_data/$domain/$foldername/cors.json) results"
 
 ##############################################################################Port Scan START############################################################################
 
