@@ -257,7 +257,7 @@ foldername=scan-$todate
   echo "$domain" >> $directory_data/$domain/$foldername/$domain.txt
   cat $directory_data/$domain/$foldername/$domain.txt | httpx >> $directory_data/$domain/$foldername/urllist.csv
   cp $directory_data/$domain/$foldername/$domain.txt $directory_data/$domain/$foldername/subdomain.csv
-  notify "Total of $(wc -l < $directory_data/$domain/$foldername/urllist.csv | awk '{print $1}') live subdomains were found"
+  notify "Total of $(wc -l < $directory_data/$domain/$foldername/urllist.csv) live subdomains were found"
 fi
 
 
