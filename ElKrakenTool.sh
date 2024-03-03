@@ -294,10 +294,10 @@ nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t cves -p "
 
 notify "Starting to check vulnerabilities"
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t vulnerabilities -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
-notify "Vulnerability scanning is complete -> $(wc -l < $directory_data/$domain/$foldername/nuclei.csv) results"
+notify "Vulnerability scan is complete -> $(wc -l < $directory_data/$domain/$foldername/nuclei.csv) results"
 
 # Nuclei logins
-
+notify "Starting with other things of Nuclei"
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t default-logins -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
 
 # Nuclei panels
