@@ -250,8 +250,16 @@ fi
 
 
 
-##############################################################################wayback START############################################################################
-
+##############################################################################XSS+WAYBACK.TXT############################################################################
+notify "Testing XSS"
+echo "$domain" | gau --threads 5 >> $directory_data/$domain/$foldername/Endpoins.txt
+echo "$domain" | waybackurls | anew $directory_data/$domain/$foldername/Endpoints.txt
+cat $directory_data/$domain/$foldername/alive_subdomains.txt | katana -jc >> $directory_data/$domain/$foldername/Endpoints.txt
+cat $directory_data/$domain/$foldername/Endpoints.txt | uro >> $directory_data/$domain/$foldername/Endpoints_F.txt
+cat $directory_data/$domain/$foldername/Endpoints_F.txt | gf xss >> $directory_data/$domain/$foldername/XSS.txt
+cat $directory_data/$domain/$foldername/XSS.txt | Gxss -p khXSS -o $directory_data/$domain/$foldername/XSS_Ref.txt
+dalfox file $directory_data/$domain/$foldername/XSS_Ref.txt -o $directory_data/$domain/$foldername/Vulnerable_XSS.txt
+notify "XSS Scan has finished -> $(wc -l < $directory_data$/$domain/$foldername/Vulnerable_XSS.txt) results"
 
 ##############################################################################OpenRedirect START############################################################################
 
