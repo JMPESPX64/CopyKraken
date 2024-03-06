@@ -36,17 +36,6 @@ function notify {
     fi
 }
 
-
-
-function logo {
-echo " _____ _       _  ______      _    _  _______ _   _ "
-echo "| ____| |     | |/ /  _ \    / \  | |/ / ____| \ | |"
-echo "|  _| | |     | ' /| |_) |  / _ \ | ' /|  _| |  \| |"
-echo "| |___| |___  | . \|  _ <  / ___ \| . \| |___| |\  |"
-echo "|_____|_____| |_|\_\_| \_\/_/   \_\_|\_\_____|_| \_|"
-echo ""
-}
-
 red=`tput setaf 1`
 green=`tput setaf 2`
 yellow=`tput setaf 3`
@@ -101,8 +90,6 @@ function flags {
   echo "-output: Envia la data recopilada al nodo de ELK"
 
 }
-
-logo
 # Verificar si se pasaron argumentos
 if [ $# -eq 0 ]; then
   echo "${red}Debe pasar al menos un argumento."
@@ -251,83 +238,35 @@ foldername=scan-$todate
   notify "Listing subdomains using subfinder on $domain..."
   sleep 1
   subfinder -all -silent -d "$domain" > $directory_data/$domain/$foldername/subdomain_ip.csv
+  amass enum -d "$domain" | anew $directory_data/$domain/$foldername/subdomain_ip.csv
+  assetfinder -subs-only "$domain" | anew $directory_data/$domain/$foldername/subdomain_ip.csv
   sleep 1
   cp $directory_data/$domain/$foldername/subdomain_ip.csv $directory_data/$domain/$foldername/$domain.txt
   notify "Probing for live hosts..."
   echo "$domain" >> $directory_data/$domain/$foldername/$domain.txt
-  cat $directory_data/$domain/$foldername/$domain.txt | httpx >> $directory_data/$domain/$foldername/urllist.csv
+  cat $directory_data/$domain/$foldername/$domain.txt | httpx >> $directory_data/$domain/$foldername/alive_subdomains.txt
   cp $directory_data/$domain/$foldername/$domain.txt $directory_data/$domain/$foldername/subdomain.csv
-  notify "Total of $(wc -l < $directory_data/$domain/$foldername/urllist.csv) live subdomains were found"
+  notify "Total of $(wc -l < $directory_data/$domain/$foldername/alive_subdomains.txt) live subdomains were found"
 fi
 
 
 
 ##############################################################################wayback START############################################################################
-#echo "${green}Starting to check available data in wayback machine"
-notify "Staring to check available data in wayback machine"
-waybackurls $domain >> $directory_data/$domain/$foldername/wayback_tmp.txt
-sleep 1
-cat $directory_data/$domain/$foldername/wayback_tmp.txt | sort -u | uro > $directory_data/$domain/$foldername/wayback.txt
-rm $directory_data/$domain/$foldername/wayback_tmp.txt
-notify "Results of waybackurls -> $(wc -l < $directory_data/$domain/$foldername/wayback.txt)"
-##############################################################################Dirsearch START############################################################################
-#if [ "$dirsearch" = true ]; then
-#notify "Starting to check discovery with dirsearch"
-#dirsearch -w ~/tools/SecLists/Discovery/Web-Content/directory-list-2.3-medium.txt -e $dirsearchExtensions -t 50 -exclude 403,401,404,400 -l $directory_data/$domain/$foldername/urllist.csv --deep-recursive -R 4 --crawl --full-url  --no-color --format=csv -o $directory_data/$domain/$foldername/dirsearch.csv
-#fi
+
 
 ##############################################################################OpenRedirect START############################################################################
 
 notify "Starting to check Open Redirect"
 cat $directory_data/$domain/$foldername/wayback.txt | grep -a -i \=http | qsreplace 'http://evil.com' | while read host do;do curl -s -L $host -I| echo -e "$host" ;done >> $directory_data/$domain/$foldername/openredirect.csv 2>/dev/null
-sleep 2
-notify "Testing XSS"
-gf xss $directory_data/$domain/$foldername/wayback.txt | kxss >> $directory_data/$domain/$foldername/posible_xss.txt
-notify "Posible xss results -> $(wc -l < $directory_data/$domain/$foldername/posible_xss.txt)"
+notify "Posible $(wc -l < $directory_data/$domain/$foldername/openredirect.csv) OPEN REDIRECTS"
 
 ##############################################################################nuclei START############################################################################
-# Nuclei CVE's
-notify "Starting with nuclei on $domain"
-nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t cves -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' 2>/tmp/error.log > $directory_data/$domain/$foldername/nuclei.csv
-
-# Nuclei vulns
-
-notify "Starting to check vulnerabilities"
-nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t vulnerabilities -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
-notify "Vulnerability scan is complete -> $(wc -l < $directory_data/$domain/$foldername/nuclei.csv) results"
-
-# Nuclei logins
-notify "Starting with other things of Nuclei"
-nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t default-logins -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
-
-# Nuclei panels
-
-nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t exposed-panels -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
-
-# Nuclei data exposure
-
-nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t exposures -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
-
-# Nuclei misc
-
-nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t miscellaneous -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
-
-# Nuclei misconfiguration
-
-nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t misconfiguration -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
-
-# Nuclei subdomain takeover
-
-nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t takeovers -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
-
-# Nucle technologies
-
-nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t technologies -p "$proxy_url" | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
+nuclei -l $directory_data/$domain/$foldername/alive_subdomains.txt -t /root/nuclei-templates -severity low,medium,high,critical -c 30 -o $directory_data/$domain/$foldername/nuclei_output.txt
 
 ##############################################################################CORS START############################################################################
 
 notify "Staring to check CORS vulnerabilities"
-python3 $directory_tools/Corsy/corsy.py -i $directory_data/$domain/$foldername/urllist.csv -o $directory_data/$domain/$foldername/cors.json
+python3 $directory_tools/Corsy/corsy.py -i $directory_data/$domain/$foldername/alive_subdomains.txt -o $directory_data/$domain/$foldername/cors.json
 notify "Cors scan has finished $(wc -l < $directory_data/$domain/$foldername/cors.json) results"
 
 ##############################################################################Port Scan START############################################################################
@@ -339,7 +278,7 @@ mv nmap_full_* $directory_data/$domain/$foldername/nmap/
 ##############################################################################CRLF START############################################################################
 
 notify "Starting to check CRLF"
-crlfuzz -l $directory_data/$domain/$foldername/urllist.csv -o $directory_data/$domain/$foldername/crlfuzz_urllist.csv
+crlfuzz -l $directory_data/$domain/$foldername/alive_subdomains.txt -o $directory_data/$domain/$foldername/crlfuzz_urllist.csv
 crlfuzz -l $directory_data/$domain/$foldername/wayback.txt -o $directory_data/$domain/$foldername/crlfuzz_wayback.txt
 cat $directory_data/$domain/$foldername/crlfuzz_urllist.csv > $directory_data/$domain/$foldername/crlfuzz.txt
 cat $directory_data/$domain/$foldername/crlfuzz_wayback.txt >> $directory_data/$domain/$foldername/crlfuzz.txt
