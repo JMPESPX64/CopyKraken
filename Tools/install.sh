@@ -87,7 +87,6 @@ GO111MODULE=on go get github.com/tomnomnom/gf@latest
 GO111MODULE=on go get github.com/tomnomnom/qsreplace@latest
 GO111MODULE=on go get github.com/tomnomnom/httpx@latest
 GO111MODULE=on go get github.com/tomnomnom/waybackurls@latest
-GO111MODULE=on go get github.com/hahwul/dalfox/v2@latest
 GO111MODULE=on go get github.com/lc/gau/v2/cmd/gau@latest
 GO111MODULE=on go get github.com/Emoe/kxss@latest
 GO111MODULE=on go get github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
