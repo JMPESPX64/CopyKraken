@@ -93,6 +93,7 @@ GO111MODULE=on go get github.com/Emoe/kxss@latest
 GO111MODULE=on go get github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
 GO111MODULE=on go get github.com/hahwul/dalfox/v2@latest
 GO111MODULE=on go get github.com/tomnomnom/assetfinder@latest
+GO111MODULE=on go get github.com/projectdiscovery/katana/cmd/katana@latest
 export GO111MODULE=off
 go install -v github.com/owasp-amass/amass/v4/...@master
 export GO111MODULE=on
