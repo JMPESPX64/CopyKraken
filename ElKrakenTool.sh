@@ -270,7 +270,7 @@ notify "Posible $(wc -l < $directory_data/$domain/$foldername/openredirect.csv) 
 
 ##############################################################################nuclei START############################################################################
 notify "Starting with nuclei"
-nuclei -l $directory_data/$domain/$foldername/alive_subdomains.txt -t /root/nuclei-templates -severity low,medium,high,critical -c 30 -o $directory_data/$domain/$foldername/nuclei_output.txt
+nuclei -l $directory_data/$domain/$foldername/alive_subdomains.txt -t /root/nuclei-templates -severity low,medium,high,critical -c 30 -o $directory_data/$domain/$foldername/nuclei_output.txt -p "$proxy_url"
 grep -v "info" $directory_data/$domain/$foldername/nuclei_output.txt > $directory_data/$domain/$foldername/nuclei_vulns.txt
 notify "Nuclei has finished, it founds $(wc -l < $directory_data/$domain/$foldername/nuclei_vulns.txt) posible vulnerabilities"
 
