@@ -83,15 +83,15 @@ cd /root/tools
 latest_version=$(curl -s https://api.github.com/repos/owasp-amass/amass/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 download_link="https://github.com/owasp-amass/amass/releases/download/${latest_version}/amass_Linux_amd64.zip"
 curl -LO $download_link
-unzip amass_Linux_amd64.zip
-cp amass /usr/local/bin/amass
+unzip -o amass_Linux_amd64.zip
+cp amass_Linux_amd64/amass /usr/local/bin/amass
 
 # Install dalfox
 cd /root/tools
 latest_version=$(curl -s https://api.github.com/repos/hahwul/dalfox/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 download_link="https://github.com/hahwul/dalfox/releases/download/${latest_version}/dalfox_$(echo $latest_version | tr -d 'v')_linux_amd64.tar.gz"
 curl -LO $download_link
-tar -xf dalfox_$(echo $latest_version | tr -d 'v')_linux_amd64.zip
+tar -xf -k dalfox_$(echo $latest_version | tr -d 'v')_linux_amd64.tar.gz
 mv dalfox /usr/local/bin/dalfox
 
 # Install GAU
@@ -99,7 +99,7 @@ cd /root/tools
 latest_version=$(curl -s https://api.github.com/repos/lc/gau/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 download_link="https://github.com/lc/gau/releases/download/${latest_version}/gau_$(echo $latest_version | tr -d 'v')_linux_amd64.tar.gz"
 curl -LO $download_link
-tar -xf gau_$(echo $latest_version | tr -d 'v')_linux_amd64.tar.gz
+tar -xf -k gau_$(echo $latest_version | tr -d 'v')_linux_amd64.tar.gz
 cp gau /usr/bin/gau
 
 # Install Katana
@@ -107,7 +107,7 @@ cd /root/tools
 latest_version=$(curl -s https://api.github.com/repos/projectdiscovery/katana/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 download_link="https://github.com/projectdiscovery/katana/releases/download/${latest_version}/katana_$(echo $latest_version | tr -d 'v')_linux_amd64.zip"
 curl -LO $download_link
-unzip katana_$(echo $latest_version | tr -d 'v')_linux_amd64.zip
+unzip -o katana_$(echo $latest_version | tr -d 'v')_linux_amd64.zip
 cp katana /usr/bin/katana
 
 # Install Gf-Patterns
