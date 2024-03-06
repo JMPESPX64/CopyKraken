@@ -98,4 +98,3 @@ go install -v github.com/owasp-amass/amass/v4/...@master
 export GO111MODULE=on
 nuclei -update-templates
 sudo cp /root/go/bin/* /usr/bin
-echo -e "\nHappy Hacking!\n"
