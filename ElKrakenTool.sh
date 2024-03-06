@@ -252,8 +252,9 @@ fi
 
 ##############################################################################XSS+WAYBACK.TXT############################################################################
 notify "Testing XSS"
-echo "$domain" | gau --threads 5 >> $directory_data/$domain/$foldername/Endpoins.txt
-echo "$domain" | waybackurls | anew $directory_data/$domain/$foldername/Endpoints.txt
+echo "$domain" | gau --threads 5 >> $directory_data/$domain/$foldername/Endpoints.txt
+sleep 1
+echo "$domain" | waybackurls >> $directory_data/$domain/$foldername/Endpoints.txt
 cat $directory_data/$domain/$foldername/alive_subdomains.txt | katana -jc >> $directory_data/$domain/$foldername/Endpoints.txt
 cat $directory_data/$domain/$foldername/Endpoints.txt | uro >> $directory_data/$domain/$foldername/Endpoints_F.txt
 cat $directory_data/$domain/$foldername/Endpoints_F.txt | gf xss >> $directory_data/$domain/$foldername/XSS.txt
@@ -264,7 +265,7 @@ notify "XSS Scan has finished -> $(wc -l < $directory_data$/$domain/$foldername/
 ##############################################################################OpenRedirect START############################################################################
 
 notify "Starting to check Open Redirect"
-cat $directory_data/$domain/$foldername/wayback.txt | grep -a -i \=http | qsreplace 'http://evil.com' | while read host do;do curl -s -L $host -I| echo -e "$host" ;done >> $directory_data/$domain/$foldername/openredirect.csv 2>/dev/null
+cat $directory_data/$domain/$foldername/Endpoints.txt | grep -a -i \=http | qsreplace 'http://evil.com' | while read host do;do curl -s -L $host -I| echo -e "$host" ;done >> $directory_data/$domain/$foldername/openredirect.csv 2>/dev/null
 notify "Posible $(wc -l < $directory_data/$domain/$foldername/openredirect.csv) OPEN REDIRECTS"
 
 ##############################################################################nuclei START############################################################################
