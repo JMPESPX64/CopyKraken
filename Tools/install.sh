@@ -91,7 +91,7 @@ cd /root/tools
 latest_version=$(curl -s https://api.github.com/repos/hahwul/dalfox/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 download_link="https://github.com/hahwul/dalfox/releases/download/${latest_version}/dalfox_$(echo $latest_version | tr -d 'v')_linux_amd64.tar.gz"
 curl -LO $download_link
-tar -xf -k dalfox_$(echo $latest_version | tr -d 'v')_linux_amd64.tar.gz
+tar -xf dalfox_$(echo $latest_version | tr -d 'v')_linux_amd64.tar.gz
 mv dalfox /usr/local/bin/dalfox
 
 # Install GAU
@@ -99,7 +99,7 @@ cd /root/tools
 latest_version=$(curl -s https://api.github.com/repos/lc/gau/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 download_link="https://github.com/lc/gau/releases/download/${latest_version}/gau_$(echo $latest_version | tr -d 'v')_linux_amd64.tar.gz"
 curl -LO $download_link
-tar -xf -k gau_$(echo $latest_version | tr -d 'v')_linux_amd64.tar.gz
+tar -xf gau_$(echo $latest_version | tr -d 'v')_linux_amd64.tar.gz
 cp gau /usr/bin/gau
 
 # Install Katana
