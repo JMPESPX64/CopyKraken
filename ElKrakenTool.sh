@@ -236,7 +236,7 @@ foldername=scan-$todate
 
 ##############################################################################Discovery START############################################################################
   notify "Listing subdomains using subfinder on $domain..."
-  subfinder -all -silent -d "$domain" > $directory_data/$domain/$foldername/subdomain_ip.csv
+  subfinder -pc /root/.config/subfinder/provider-config.yaml -all -silent -d "$domain" > $directory_data/$domain/$foldername/subdomain_ip.csv
   amass enum -d "$domain" | anew $directory_data/$domain/$foldername/subdomain_ip.csv
   assetfinder -subs-only "$domain" | anew $directory_data/$domain/$foldername/subdomain_ip.csv
   sleep 1
