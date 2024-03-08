@@ -219,7 +219,6 @@ if [ "$recon" = true ]; then
    report $domain $subdomain $foldername $subd; exit 1;
    fi
    clear
-   logo
    if [ -d "$directory_data/$domain" ]
    then
      echo "${yellow}Este target fue escaneado previamente!."
