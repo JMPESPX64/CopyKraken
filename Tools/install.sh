@@ -22,7 +22,7 @@ sudo apt install -y dnsutils
 sudo apt install -y curl
 sudo apt install -y nmap
 
-GO111MODULE=on go get github.com/projectdiscovery/katana/cmd/katana@latest
+go install github.com/projectdiscovery/katana/cmd/katana@latest
 
 
 
