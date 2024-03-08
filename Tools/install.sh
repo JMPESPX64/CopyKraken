@@ -117,14 +117,13 @@ git clone https://github.com/1ndianl33t/Gf-Patterns /root/Gf-Patterns
 mkdir .gf
 mv /root/Gf-Patterns/*.json /root/.gf
 
-GO111MODULE=on go get github.com/tomnomnom/anew@latest
-GO111MODULE=on go get github.com/tomnomnom/gf@latest
-GO111MODULE=on go get github.com/tomnomnom/qsreplace@latest
-GO111MODULE=on go get github.com/tomnomnom/httpx@latest
-GO111MODULE=on go get github.com/tomnomnom/waybackurls@latest
-GO111MODULE=on go get github.com/KathanP19/Gxss@latest
-GO111MODULE=on go get github.com/Emoe/kxss@latest
-GO111MODULE=on go get github.com/tomnomnom/assetfinder@latest
+go install -v github.com/tomnomnom/anew@latest
+go install github.com/tomnomnom/gf@latest
+go install github.com/tomnomnom/qsreplace@latest
+go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
+go install github.com/tomnomnom/waybackurls@latest
+go install github.com/KathanP19/Gxss@latest
+go install github.com/tomnomnom/assetfinder@latest
 nuclei -update-templates
 sudo cp /root/go/bin/* /usr/bin
 
