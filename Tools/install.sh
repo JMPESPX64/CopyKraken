@@ -1,4 +1,5 @@
 #!/bin/bash
+export DEBIAN_FRONTEND=noninteractive
 sudo apt update
 sudo apt install -y libcurl4-openssl-dev tar
 sudo apt install -y libssl-dev
