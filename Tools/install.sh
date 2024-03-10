@@ -124,6 +124,7 @@ go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
 go install github.com/tomnomnom/waybackurls@latest
 go install github.com/KathanP19/Gxss@latest
 go install github.com/tomnomnom/assetfinder@latest
+go install github.com/Emoe/kxss@latest
 nuclei -update-templates
 sudo cp /root/go/bin/* /usr/bin
 
