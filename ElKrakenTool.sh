@@ -259,9 +259,9 @@ cat $directory_data/$domain/$foldername/Endpoints_F.txt | gf xss >> $directory_d
 cat $directory_data/$domain/$foldername/XSS.txt | httpx -mc 200 | sponge $directory_data/$domain/$foldername/XSS.txt
 sleep 1
 cat $directory_data/$domain/$foldername/XSS.txt | Gxss -p khXSS -o $directory_data/$domain/$foldername/XSS_Ref.txt
-notify "Running dalfox"
-dalfox file $directory_data/$domain/$foldername/XSS_Ref.txt -o $directory_data/$domain/$foldername/Vulnerable_XSS.txt
-notify "XSS Scan has finished -> $(wc -l < $directory_data$/$domain/$foldername/Vulnerable_XSS.txt) results"
+notify "Running kxss"
+cat $directory_data/$domain/$foldername/XSS_Ref.txt | kxss >> $directory_data/$domain/$foldername/Posible_xss.txt
+notify "XSS Scan has finished -> $(wc -l < $directory_data$/$domain/$foldername/Posible_xss.txt) results"
 
 ##############################################################################OpenRedirect START############################################################################
 
