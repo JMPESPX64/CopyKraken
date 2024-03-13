@@ -251,7 +251,6 @@ fi
 ##############################################################################XSS+WAYBACK.TXT############################################################################
 notify "Testing XSS"
 echo "$domain" | gau --threads 5 >> $directory_data/$domain/$foldername/Endpoints.txt
-sleep 1
 echo "$domain" | waybackurls >> $directory_data/$domain/$foldername/Endpoints.txt
 cat $directory_data/$domain/$foldername/Endpoints.txt | uro >> $directory_data/$domain/$foldername/Endpoints_F.txt
 cat $directory_data/$domain/$foldername/Endpoints_F.txt | gf xss >> $directory_data/$domain/$foldername/XSS.txt
@@ -264,8 +263,8 @@ notify "XSS Scan has finished -> $(wc -l < $directory_data$/$domain/$foldername/
 # Http crawl
 notify "Starting to check leak API-KEYS/PASSWORD"
 katana -list $directory_data/$domain/$foldername/alive_subdomains.txt -d 5 -jc | grep ".js$" | uniq | sort >> $directory_data/$domain/$foldername/katana.txt
-
-
+cat $directory_data/$domain/$foldername/katana.txt | while read url ; do python3 /usr/bin/secretfinder.py -i $url -o $directory_data/$domain/$foldername/leaks.txt ; done
+notify "Secret Finder has finished $(wc -l < $directory_data/$domain/$foldername/leaks.txt) results"
 
 ##############################################################################OpenRedirect START############################################################################
 
