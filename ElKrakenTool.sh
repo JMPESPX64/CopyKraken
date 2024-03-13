@@ -253,15 +253,19 @@ notify "Testing XSS"
 echo "$domain" | gau --threads 5 >> $directory_data/$domain/$foldername/Endpoints.txt
 sleep 1
 echo "$domain" | waybackurls >> $directory_data/$domain/$foldername/Endpoints.txt
-cat $directory_data/$domain/$foldername/alive_subdomains.txt | katana -jc >> $directory_data/$domain/$foldername/Endpoints.txt
 cat $directory_data/$domain/$foldername/Endpoints.txt | uro >> $directory_data/$domain/$foldername/Endpoints_F.txt
 cat $directory_data/$domain/$foldername/Endpoints_F.txt | gf xss >> $directory_data/$domain/$foldername/XSS.txt
 cat $directory_data/$domain/$foldername/XSS.txt | httpx -mc 200 | sponge $directory_data/$domain/$foldername/XSS.txt
-sleep 1
 cat $directory_data/$domain/$foldername/XSS.txt | Gxss -p khXSS -o $directory_data/$domain/$foldername/XSS_Ref.txt
 notify "Running kxss"
 cat $directory_data/$domain/$foldername/XSS_Ref.txt | kxss >> $directory_data/$domain/$foldername/Posible_xss.txt
 notify "XSS Scan has finished -> $(wc -l < $directory_data$/$domain/$foldername/Posible_xss.txt) results"
+
+# Http crawl
+notify "Starting to check leak API-KEYS/PASSWORD"
+katana -list $directory_data/$domain/$foldername/alive_subdomains.txt -d 5 -jc | grep ".js$" | uniq | sort >> $directory_data/$domain/$foldername/katana.txt
+
+
 
 ##############################################################################OpenRedirect START############################################################################
 
