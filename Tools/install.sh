@@ -25,11 +25,10 @@ sudo apt install -y nmap
 sudo apt install -y dos2unix
 pip3 install dirsearch
 
-pip install colored
-pip3 install colored
-pip3 install uro
+pip install colored --break-system-packages
+pip3 install colored --break-system-packages
 pip3 install --break-system-packages uro
-pip3 install requests
+pip3 install requests --breadk-system-packages
 
 mkdir /root/tools
 
@@ -110,6 +109,13 @@ download_link="https://github.com/projectdiscovery/katana/releases/download/${la
 curl -LO $download_link
 unzip -o katana_$(echo $latest_version | tr -d 'v')_linux_amd64.zip
 cp katana /usr/bin/katana
+
+# Install secretfinder
+cd /root/tools
+git clone https://github.com/m4ll0k/SecretFinder.git secretfinder
+cd /root/tools/secretfinder
+pip3 install -r requirements.txt --break-system-packages
+cp SecretFinder.py /usr/bin/secretfinder.py
 
 # Install Gf-Patterns
 cd /root
