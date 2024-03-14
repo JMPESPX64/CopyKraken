@@ -263,7 +263,8 @@ notify "XSS Scan has finished -> $(wc -l < $directory_data$/$domain/$foldername/
 # Http crawl
 notify "Starting to check leak API-KEYS/PASSWORD"
 katana -list $directory_data/$domain/$foldername/alive_subdomains.txt -d 5 -jc | grep ".js$" | uniq | sort >> $directory_data/$domain/$foldername/katana.txt
-cat $directory_data/$domain/$foldername/katana.txt | while read url ; do python3 /usr/bin/secretfinder.py -i $url -o $directory_data/$domain/$foldername/leaks.txt ; done
+notify "Running secretfinder"
+cat $directory_data/$domain/$foldername/katana.txt | while read url ; do python3 /root/tools/secretfinder/SecretFinder.py -i $url -o $directory_data/$domain/$foldername/leaks.txt ; sleep 0.2 ; done
 notify "Secret Finder has finished $(wc -l < $directory_data/$domain/$foldername/leaks.txt) results"
 
 ##############################################################################OpenRedirect START############################################################################
@@ -274,7 +275,7 @@ notify "Posible $(wc -l < $directory_data/$domain/$foldername/openredirect.csv) 
 
 ##############################################################################nuclei START############################################################################
 notify "Starting with nuclei"
-nuclei -l $directory_data/$domain/$foldername/alive_subdomains.txt -t /root/nuclei-templates -severity low,medium,high,critical -c 30 -o $directory_data/$domain/$foldername/nuclei_output.txt -p "$proxy_url"
+nuclei -l $directory_data/$domain/$foldername/alive_subdomains.txt -t /root/nuclei-templates -severity low,medium,high,critical -c 30 -o $directory_data/$domain/$foldername/nuclei_output.txt
 grep -v "info" $directory_data/$domain/$foldername/nuclei_output.txt > $directory_data/$domain/$foldername/nuclei_vulns.txt
 notify "Nuclei has finished, it founds $(wc -l < $directory_data/$domain/$foldername/nuclei_vulns.txt) posible vulnerabilities"
 
