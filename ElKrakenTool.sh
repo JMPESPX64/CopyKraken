@@ -264,7 +264,7 @@ notify "XSS Scan has finished -> $(wc -l < $directory_data$/$domain/$foldername/
 notify "Starting to check leak API-KEYS/PASSWORD"
 katana -list $directory_data/$domain/$foldername/alive_subdomains.txt -d 5 -jc | grep ".js$" | uniq | sort >> $directory_data/$domain/$foldername/katana.txt
 notify "Running secretfinder"
-cat $directory_data/$domain/$foldername/katana.txt | while read url ; do python3 /root/tools/secretfinder/SecretFinder.py -i $url -o $directory_data/$domain/$foldername/leaks.txt ; sleep 0.2 ; done
+cat $directory_data/$domain/$foldername/katana.txt | while read url ; do python3 /root/tools/secretfinder/SecretFinder.py -i $url -o $directory_data/$domain/$foldername/cli ; sleep 0.2 ; done
 notify "Secret Finder has finished $(wc -l < $directory_data/$domain/$foldername/leaks.txt) results"
 
 ##############################################################################OpenRedirect START############################################################################
