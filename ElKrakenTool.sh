@@ -77,7 +77,28 @@ function flags {
 
 }
 
-logo
+function notify {
+    if [ "$notify" = true ]
+    then
+        if [ $(($(date +%s) - lastNotified)) -le 3 ]
+        then
+            echo "[!] Notifying too quickly, sleeping to avoid skipped notifications..."
+            sleep 3
+        fi
+
+        # Format string to escape special characters and send message through Telegram API.
+        if [ -z "$DOMAIN" ]
+        then
+            message=`echo -ne "*BugBountyScanner:* $1" | sed 's/[^a-zA-Z 0-9*_]/\\\\&/g'`
+        else
+            message=`echo -ne "*BugBountyScanner [$DOMAIN]:* $1" | sed 's/[^a-zA-Z 0-9*_]/\\\\&/g'`
+        fi
+    
+        curl -s -X POST "https://api.telegram.org/bot$telegram_api_key/sendMessage" -d chat_id="$telegram_chat_id" -d text="$message" -d parse_mode="MarkdownV2" &> /dev/null
+        lastNotified=$(date +%s)
+    fi
+}
+
 # Verificar si se pasaron argumentos
 if [ $# -eq 0 ]; then
   echo "${red}Debe pasar al menos un argumento."
@@ -223,7 +244,7 @@ foldername=scan-$todate
   mkdir $directory_data/$domain/$foldername/nmap
 
 ##############################################################################Discovery START############################################################################
-  curl -F token=$tokenSlack -F channel=$channelSlack -F text="El runner a iniciado el scan en $domain!" https://slack.com/api/chat.postMessage
+  notify "El runner a iniciado el scan en $domain!"
   echo "${green}Recon started in Subdomain $domain ${reset}"
   echo "Listing subdomains using subfinder..."
   subfinder -all -silent -d $domain -oI -nW > $directory_data/$domain/$foldername/subdomain_ip.csv
@@ -240,9 +261,12 @@ fi
 ##############################################################################wayback START############################################################################
 if [ "$wayback" = true ]; then
 #echo "${green}Starting to check available data in wayback machine"
+notify "Running GAU"
 waybackurls $domain > $directory_data/$domain/$foldername/wayback_tmp.txt
+gau -subs --threads 10 $domain >> $directory_data/$domain/$foldername/wayback_tmp.txt
 cat $directory_data/$domain/$foldername/wayback_tmp.txt | sort -u | uro > $directory_data/$domain/$foldername/wayback.txt
 rm $directory_data/$domain/$foldername/wayback_tmp.txt
+cat $directory_data/$domain/$foldername/wayback.txt | gf xss | kxss >> $directory_data/$domain/$foldername/check_xss.txt
 fi
 
 ##############################################################################Dirsearch START############################################################################
@@ -262,6 +286,8 @@ if [ "$cors" = true ]; then
 echo "{green}Starting to check CORS vulnerabilities"
 python3 $directory_tools/Corsy/corsy.py -i $directory_data/$domain/$foldername/urllist.csv -o $directory_data/$domain/$foldername/cors.json
 fi
+
+# Find secrets
 
 
 ##############################################################################Port Scan START############################################################################
@@ -283,6 +309,7 @@ fi
 
 ##############################################################################nuclei START############################################################################
 if [ "$nuclei_cves" = true ]; then
+notify "Starting with nuclei"
 echo "{green}Starting to check cves"
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t cves | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' > $directory_data/$domain/$foldername/nuclei.csv
 fi
@@ -323,6 +350,7 @@ nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t technolog
 fi
 
 if [ "$nuclei_vuln" = true ]; then
+notify "Nuclei has finished"
 echo "{green}Starting to check vulnerabilities"
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t vulnerabilities | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
 fi
@@ -331,5 +359,4 @@ fi
 if [ "$output" = true ]; then
  scp -o  StrictHostKeyChecking=no -r ~/$domain $ssh_conection
  echo "{yellow}The recopiled data was moved to the Master node"
- curl -F token=$tokenSlack -F channel=$channelSlack -F text="Los resultados se movieron al Backoffice para ser indexados. Fue un total de $(wc -l $directory_data/$domain/$foldername/urllist.csv | awk '{print $1}') URLs activas encontradas." https://slack.com/api/chat.postMessage
-fi
+ notify "The scan has finished"
