@@ -23,11 +23,11 @@ sudo apt install -y dnsutils
 sudo apt install -y curl
 sudo apt install -y nmap
 sudo apt install -y dos2unix
-pip3 install dirsearch
+pip3 install dirsearch --break-system-packages
 
 pip install colored --break-system-packages
 pip3 install colored --break-system-packages
-pip3 install --break-system-packages uro
+pip3 install uro --break-system-packages
 pip3 install requests --breadk-system-packages
 
 mkdir /root/tools
