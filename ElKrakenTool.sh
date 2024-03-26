@@ -257,6 +257,30 @@ echo "${green}Starting to check Open Redirect"
 waybackurls $domain | grep -a -i \=http | qsreplace 'http://evil.com' | while read host do;do curl -s -L $host -I| echo -e "$host" ;done >> $directory_data/$domain/$foldername/openredirect.csv 2>/dev/null
 fi
 
+##############################################################################CORS START############################################################################
+if [ "$cors" = true ]; then
+echo "{green}Starting to check CORS vulnerabilities"
+python3 $directory_tools/Corsy/corsy.py -i $directory_data/$domain/$foldername/urllist.csv -o $directory_data/$domain/$foldername/cors.json
+fi
+
+
+##############################################################################Port Scan START############################################################################
+if [ "$nmap" = true ]; then
+echo "{green}Starting to check Open Ports"
+bash $directory_tools/customscripts/loop_nmap.sh $directory_data/$domain/$foldername/subdomain.csv
+mv nmap_full_* $directory_data/$domain/$foldername/nmap/
+fi
+
+##############################################################################CRLF START############################################################################
+if [ "$crlf" = true ]; then
+echo "{green}Starting to check CRLF"
+ crlfuzz -l $directory_data/$domain/$foldername/urllist.csv -o $directory_data/$domain/$foldername/crlfuzz_urllist.csv
+ crlfuzz -l $directory_data/$domain/$foldername/wayback.txt -o $directory_data/$domain/$foldername/crlfuzz_wayback.txt
+ cat $directory_data/$domain/$foldername/crlfuzz_urllist.csv > $directory_data/$domain/$foldername/crlfuzz.txt
+ cat $directory_data/$domain/$foldername/crlfuzz_wayback.txt >> $directory_data/$domain/$foldername/crlfuzz.txt
+ rm $directory_data/$domain/$foldername/crlfuzz_urllist.csv  $directory_data/$domain/$foldername/crlfuzz_wayback.txt
+fi
+
 ##############################################################################nuclei START############################################################################
 if [ "$nuclei_cves" = true ]; then
 echo "{green}Starting to check cves"
@@ -301,31 +325,6 @@ fi
 if [ "$nuclei_vuln" = true ]; then
 echo "{green}Starting to check vulnerabilities"
 nuclei -l $directory_data/$domain/$foldername/urllist.csv -no-color -t vulnerabilities | sed 's/ /,/g; s/\[//g; s/\]//g; s/(//g; s/)//g' >> $directory_data/$domain/$foldername/nuclei.csv
-fi
-
-
-##############################################################################CORS START############################################################################
-if [ "$cors" = true ]; then
-echo "{green}Starting to check CORS vulnerabilities"
-python3 $directory_tools/Corsy/corsy.py -i $directory_data/$domain/$foldername/urllist.csv -o $directory_data/$domain/$foldername/cors.json
-fi
-
-
-##############################################################################Port Scan START############################################################################
-if [ "$nmap" = true ]; then
-echo "{green}Starting to check Open Ports"
-bash $directory_tools/customscripts/loop_nmap.sh $directory_data/$domain/$foldername/subdomain.csv
-mv nmap_full_* $directory_data/$domain/$foldername/nmap/
-fi
-
-##############################################################################CRLF START############################################################################
-if [ "$crlf" = true ]; then
-echo "{green}Starting to check CRLF"
- crlfuzz -l $directory_data/$domain/$foldername/urllist.csv -o $directory_data/$domain/$foldername/crlfuzz_urllist.csv
- crlfuzz -l $directory_data/$domain/$foldername/wayback.txt -o $directory_data/$domain/$foldername/crlfuzz_wayback.txt
- cat $directory_data/$domain/$foldername/crlfuzz_urllist.csv > $directory_data/$domain/$foldername/crlfuzz.txt
- cat $directory_data/$domain/$foldername/crlfuzz_wayback.txt >> $directory_data/$domain/$foldername/crlfuzz.txt
- rm $directory_data/$domain/$foldername/crlfuzz_urllist.csv  $directory_data/$domain/$foldername/crlfuzz_wayback.txt
 fi
 
 ##############################################################################Output START############################################################################
