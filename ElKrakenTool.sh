@@ -248,11 +248,13 @@ foldername=scan-$todate
   echo "${green}Recon started in Subdomain $domain ${reset}"
   echo "Listing subdomains using subfinder..."
   subfinder -all -silent -d $domain -oI -nW > $directory_data/$domain/$foldername/subdomain_ip.csv
+  amass enum -brute -d $domain | anew $directory_data/$domain/$foldername/subdomain_ip.csv
   cat $directory_data/$domain/$foldername/subdomain_ip.csv | sed "s/[,].*//" | sort -u >> $directory_data/$domain/$foldername/$domain.txt
   echo "${green}Probing for live hosts..."
   echo $domain >> $directory_data/$domain/$foldername/$domain.txt
-  cat $directory_data/$domain/$foldername/$domain.txt | httpx >> $directory_data/$domain/$foldername/urllist.csv
+  cat $directory_data/$domain/$foldername/$domain.txt | httpx -title -tech-detect -status-code -ip -p 66,80,81,443,445,457,1080,1100,1241,1352,1433,1434,1521,1944,2301,3000,3128,3306,4000,4001,4002,4100,5000,5432,5800,5801,5802,6082,6346,6347,7001,7002,8080,8443,8888,30821 >> $directory_data/$domain/$foldername/httpx_results.txt
   cp $directory_data/$domain/$foldername/$domain.txt $directory_data/$domain/$foldername/subdomain.csv
+  cp $directory_data/$domain/$foldername/httpx.txt | awk '{print $1}' $directory_data/$domain/$foldername/urllist.csv
   echo  "${yellow}Total of $(wc -l $directory_data/$domain/$foldername/urllist.csv | awk '{print $1}') live subdomains were found${reset}"
 fi
 
@@ -286,9 +288,6 @@ if [ "$cors" = true ]; then
 echo "{green}Starting to check CORS vulnerabilities"
 python3 $directory_tools/Corsy/corsy.py -i $directory_data/$domain/$foldername/urllist.csv -o $directory_data/$domain/$foldername/cors.json
 fi
-
-# Find secrets
-
 
 ##############################################################################Port Scan START############################################################################
 if [ "$nmap" = true ]; then
@@ -359,4 +358,6 @@ fi
 if [ "$output" = true ]; then
  scp -o  StrictHostKeyChecking=no -r ~/$domain $ssh_conection
  echo "{yellow}The recopiled data was moved to the Master node"
+ zip -r "$domain.zip" $directory_data/$domain/$foldername
  notify "The scan has finished"
+ notify "Your file.zip has been created -> $domain.zip"
