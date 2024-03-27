@@ -1,6 +1,7 @@
 #!/bin/bash
 apt update
 apt install moreutils -y
+apt install snapd
 apt install sudo -y
 sudo apt install -y libcurl4-openssl-dev tar zip unzip
 sudo apt install -y libssl-dev
@@ -16,7 +17,8 @@ sudo apt install -y python3-dnspython
 sudo apt install -y git
 sudo apt install -y rename
 sudo apt install -y xargs
-sudo apt install -y chromium-browser chromium-l10n
+sudo apt install -y chromium-l10n
+snap install chromium
 sudo apt install -y golang
 sudo apt install -y libpcap-dev
 sudo apt install -y tmux
