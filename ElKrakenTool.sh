@@ -248,6 +248,7 @@ foldername=scan-$todate
   echo "${green}Recon started in Subdomain $domain ${reset}"
   echo "Listing subdomains using subfinder..."
   subfinder -all -silent -d $domain -oI -nW > $directory_data/$domain/$foldername/subdomain_ip.csv
+  notify "Running amass"
   amass enum -brute -d $domain | anew $directory_data/$domain/$foldername/subdomain_ip.csv
   cat $directory_data/$domain/$foldername/subdomain_ip.csv | sed "s/[,].*//" | sort -u >> $directory_data/$domain/$foldername/$domain.txt
   echo "${green}Probing for live hosts..."
