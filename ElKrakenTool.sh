@@ -59,7 +59,6 @@ gau --threads 16 --subs --blacklist png,jpg,gif,svg,woff,woff2 $domain >> $direc
 waybackurls $domain | anew $directory_data/$domain/wayback_urls/urls.txt
 notify "Running katana"
 katana -list $domain -d 5 -jc -silent | anew $directory_data/$domain/secrets/katana.txt
-cat $directory_data/$domain/secrets/katana.txt >> $directory_data/$domain/wayback_urls/urls.txt
 gf xss $directory_data/$domain/wayback_urls/urls.txt >> $directory_data/$domain/wayback_urls/parameter_urls.txt
 cat $directory_data/$domain/wayback_urls/parameter_urls.txt | uro | kxss | grep -v "\[\]" >> $directory_data/$domain/vulns/posible_xss.txt
 
@@ -76,7 +75,7 @@ rm $directory_data/$domain/vulns/crlf2.txt
 
 # Find secrets
 notify "Search secrets"
-cat $directory_data/$domain/secrets/katana.txt | grep "\.js$" | httpx -mc 200 -silent >> $directory_data/$domain/secrets/js_files.txt
+cat $directory_data/$domain/secrets/katana.txt >> $directory_data/$domain/secrets/js_files.txt
 cat $directory_data/$domain/secrets/js_files.txt | while read url ; do
 	python3 $tools_dir/secretfinder/SecretFinder.py -i $url -o $directory_data/$domain/secrets/results.html
 done
