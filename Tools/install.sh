@@ -54,6 +54,8 @@ mkdir /root/.gf
 git clone https://github.com/1ndianl33t/Gf-Patterns /root/tools/Gf-Patterns
 mv /root/tools/Gf-Patterns/*.json /root/.gf
 
+# Custom scripts
+git clone https://github.com/rockysec/customscripts /root/tools
 
 # Go packages
 go install -v github.com/projectdiscovery/chaos-client/cmd/chaos@latest
