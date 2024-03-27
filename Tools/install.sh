@@ -29,7 +29,7 @@ pip3 install uro --break-system-packages
 pip3 install requests --break-system-packages
 
 # Aquatone
-mkdir -p /root/tools/aquatone_dir
+mkdir /root/tools/aquatone_dir
 cd /root/tools/aquatone_dir
 latest_version_aquatone=$(curl -s https://api.github.com/repos/michenriksen/aquatone/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 download_link_aquatone="https://github.com/michenriksen/aquatone/releases/download/${latest_version_aquatone}/aquatone_linux_amd64_$(echo $latest_version_aquatone | tr -d 'v').zip"
@@ -52,7 +52,7 @@ pip3 install -r /root/tools/Corsy/requirements.txt --break-system-packages
 # GF-PATTERNS
 mkdir /root/.gf
 git clone https://github.com/1ndianl33t/Gf-Patterns /root/tools/Gf-Patterns
-mv /root/Gf-Patterns/*.json /root/.gf
+mv /root/tools/Gf-Patterns/*.json /root/.gf
 
 
 # Go packages
