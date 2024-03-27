@@ -1,2 +1,7 @@
-#!/bin/bash
-sudo sed -i 's/#$nrconf{restart} = '"'"'i'"'"';/$nrconf{restart} = '"'"'a'"'"';/g' /etc/needrestart/needrestart.conf
+#/bin/bash
+input="$1"
+while read -u 10 line;
+do
+bash ~/tools/ElKraken/ElKrakenTool.sh $line
+sleep 3
+done 10< "${1}"
