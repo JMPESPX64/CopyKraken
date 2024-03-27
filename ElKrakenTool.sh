@@ -1,6 +1,7 @@
 #!/bin/bash
 
-domain=$1
+domain=""
+recon=true
 notify=true 
 directory_data=/root
 tools_dir=$directory_data/tools
@@ -33,32 +34,55 @@ function notify {
     fi
 }
 
+if [ "$recon" = true ]; then
+
+  if [ -z "${domain}" ]; then
+   domain=${subreport[1]}
+   foldername=${subreport[2]}
+   subd=${subreport[3]}
+   report $domain $subdomain $foldername $subd; exit 1;
+   fi
+   clear
+   logo
+   if [ -d "$directory_data/$domain" ]
+   then
+     echo "${yellow}Este target fue escaneado previamente!."
+     exit
+   else
+     mkdir $directory_data/$domain
+fi
+
 # Find subdomains 
 notify "Listing subdomains"
-chaos -dL $1 -silent >> $directory_data/$domain/subdomains/subdomains.txt
-subfinder -dL $1 -all -silent | anew $directory_data/$domain/subdomains/subdomains.txt
-assetfinder --subs-only $1 | anew $directory_data/$domain/subdomains/subdomains.txt 
+mkdir $directory_data/$domain/subdomains
+chaos -dL $domain -silent >> $directory_data/$domain/subdomains/subdomains.txt
+subfinder -dL $domain -all -silent | anew $directory_data/$domain/subdomains/subdomains.txt
+assetfinder --subs-only $domain | anew $directory_data/$domain/subdomains/subdomains.txt 
 
 # Get alive subdomains 
 notify "Running httpx"
+mkdir $directory_data/$domain/httpx_info
 cat $directory_data/$domain/subdomains/subdomains.txt | httpx -title -tech-detect -status-code -ip -p 80,443,8080,8081,9002,8443,81 >> $directory_data/$domain/httpx_info/httpx_full_info.txt
 
 cat $directory_data/$domain/httpx_info/httpx_full_info.txt | awk '{print $1}' >> $directory_data/$domain/httpx_info/alive_subdomains.txt
 
 # Take screenshots
 notify "Taking screenshots"
+mkdir $directory_data/$domain/screenshots
 cat $directory_data/$domain/httpx_info/alive_subdomains.txt | aquatone -out $directory_data/$domain/screenshots
 
 # Subdomains takeover 
 notify "Check subdomains takeover with subzy"
+mkdir $directory_data/$domain/vulns
 subzy run --targets $directory_data/$domain/httpx_info/alive_subdomains.txt --hide_fails >> $directory_data/$domain/vulns/posible_takeover.txt
 
 # XSS
 notify "Running gau"
-gau --threads 16 --subs --blacklist png,jpg,gif,svg,woff,woff2 $1 >> $directory_data/$domain/wayback_urls/urls.txt
-waybackurls $1 | anew $directory_data/$domain/wayback_urls/urls.txt
+mkdir $directory_data/$domain/wayback_urls
+gau --threads 16 --subs --blacklist png,jpg,gif,svg,woff,woff2 $domain >> $directory_data/$domain/wayback_urls/urls.txt
+waybackurls $domain | anew $directory_data/$domain/wayback_urls/urls.txt
 notify "Running katana"
-katana -list $1 -d 5 -jc -silent | anew $directory_data/$domain/secrets/katana.txt
+katana -list $domain -d 5 -jc -silent | anew $directory_data/$domain/secrets/katana.txt
 cat $directory_data/$domain/secrets/katana.txt >> $directory_data/$domain/wayback_urls/urls.txt
 gf xss $directory_data/$domain/wayback_urls/urls.txt >> $directory_data/$domain/wayback_urls/parameter_urls.txt
 cat $directory_data/$domain/wayback_urls/parameter_urls.txt | uro | kxss | grep -v "\[\]" >> $directory_data/$domain/vulns/posible_xss.txt
