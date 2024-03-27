@@ -76,7 +76,7 @@ rm $directory_data/$domain/vulns/crlf2.txt
 
 # Find secrets
 notify "Search secrets"
-cat $directory_data/$domain/secrets/katana.txt | grep "\.js$" | httpx -mc 200 -silent >> $directory_data/$domain/secrets/js_files.txt
+cat $directory_data/$domain/secrets/katana.txt $directory_data/$domain/wayback_urls/urls.txt | grep "\.js$" | httpx -mc 200 -silent >> $directory_data/$domain/secrets/js_files.txt
 cat $directory_data/$domain/secrets/js_files.txt | while read url ; do
 	python3 $tools_dir/secretfinder/SecretFinder.py -i $url -o $directory_data/$domain/secrets/results.html
 done
