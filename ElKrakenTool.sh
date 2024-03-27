@@ -10,6 +10,7 @@ channelSlack="YOUR_CHANNEL"
 directory_tools=~/tools
 directory_data=/root
 ssh_conection="user@ipadd:/folder" ##reemplazar user, ipaddr y folder por los datos de tu servidor repositorio de resultados de escaneo
+notify=true
 ########################################
 
 
@@ -269,7 +270,8 @@ waybackurls $domain > $directory_data/$domain/$foldername/wayback_tmp.txt
 gau -subs --threads 10 $domain >> $directory_data/$domain/$foldername/wayback_tmp.txt
 cat $directory_data/$domain/$foldername/wayback_tmp.txt | sort -u | uro > $directory_data/$domain/$foldername/wayback.txt
 rm $directory_data/$domain/$foldername/wayback_tmp.txt
-cat $directory_data/$domain/$foldername/wayback.txt | gf xss | kxss >> $directory_data/$domain/$foldername/check_xss.txt
+cat $directory_data/$domain/$foldername/wayback.txt | gf xss | kxss | grep -v "\[\]" >> $directory_data/$domain/$foldername/check_xss.txt
+notify "$(wc -l < $directory_data/$domain/$foldername/check_xss.txt) -> results to probe XSS"
 fi
 
 ##############################################################################Dirsearch START############################################################################
@@ -280,26 +282,26 @@ fi
 
 ##############################################################################OpenRedirect START############################################################################
 if [ "$or" = true ]; then
-echo "${green}Starting to check Open Redirect"
+notify "Starting to check Open Redirect"
 waybackurls $domain | grep -a -i \=http | qsreplace 'http://evil.com' | while read host do;do curl -s -L $host -I| echo -e "$host" ;done >> $directory_data/$domain/$foldername/openredirect.csv 2>/dev/null
 fi
 
 ##############################################################################CORS START############################################################################
 if [ "$cors" = true ]; then
-echo "{green}Starting to check CORS vulnerabilities"
+notify "Starting to check CORS vulnerabilities"
 python3 $directory_tools/Corsy/corsy.py -i $directory_data/$domain/$foldername/urllist.csv -o $directory_data/$domain/$foldername/cors.json
 fi
 
 ##############################################################################Port Scan START############################################################################
 if [ "$nmap" = true ]; then
-echo "{green}Starting to check Open Ports"
+notify "Starting to check Open Ports"
 bash $directory_tools/customscripts/loop_nmap.sh $directory_data/$domain/$foldername/subdomain.csv
 mv nmap_full_* $directory_data/$domain/$foldername/nmap/
 fi
 
 ##############################################################################CRLF START############################################################################
 if [ "$crlf" = true ]; then
-echo "{green}Starting to check CRLF"
+notify "Starting to check CRLF"
  crlfuzz -l $directory_data/$domain/$foldername/urllist.csv -o $directory_data/$domain/$foldername/crlfuzz_urllist.csv
  crlfuzz -l $directory_data/$domain/$foldername/wayback.txt -o $directory_data/$domain/$foldername/crlfuzz_wayback.txt
  cat $directory_data/$domain/$foldername/crlfuzz_urllist.csv > $directory_data/$domain/$foldername/crlfuzz.txt
