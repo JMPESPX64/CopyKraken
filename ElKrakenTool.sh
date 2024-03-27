@@ -1,16 +1,11 @@
 #!/bin/bash
 
-domain=""
+
 recon=true
 notify=true 
 directory_data=/root
 tools_dir=$directory_data/tools
-mkdir -p $directory_data/$domain/subdomains
-mkdir $directory_data/$domain/httpx_info
-mkdir $directory_data/$domain/screenshots
-mkdir $directory_data/$domain/vulns
-mkdir $directory_data/$domain/wayback_urls
-mkdir $directory_data/$domain/secrets
+domain=$2
 
 function notify {
     if [ "$notify" = true ]
@@ -34,6 +29,182 @@ function notify {
     fi
 }
 
+red=`tput setaf 1`
+green=`tput setaf 2`
+yellow=`tput setaf 3`
+reset=`tput sgr0`
+SECONDS=0
+domain=$2
+#subreport=
+#usage() { echo -e "Usage: $0 -d domain [-e]\n  Select -e to specify excluded domains\n " 1>&2; exit 1; }
+#while getopts ":d:e:r:" o; do
+#    case "${o}" in
+#        d)
+#            domain=${OPTARG}
+#            ;;
+
+            #### working on subdomain exclusion
+#        e)
+#            excluded=${OPTARG}
+#            ;;
+#                r)
+#            subreport+=("$OPTARG")
+#            ;;
+#        *)
+#            usage
+#            ;;
+#    esac
+#done
+
+#shift $((OPTIND - 1))
+#if [ -z "${domain}" ] && [[ -z ${subreport[@]} ]]; then
+#   usage; exit 1;
+#fi
+
+function flags {
+  echo "${yellow}Argumentos permitidos:"
+  echo "-domain <argumento>: Realiza la tarea 1 con el argumento especificado"
+  echo "-recon: Realiza validacion dns, urls, etc"
+  echo "-wayback: Realiza recopilacion de info en wayback url"
+  echo "-dirsearch: Realiza fuzzing de directorios"
+  echo "-nuclei_cves: Realiza scaneos con nuclei en busca de vulnerabilidades"
+  echo "-nuclei_dlogins: Realiza scaneos con nuclei en busca de Default Logins"
+  echo "-nuclei_panels: Realiza scaneos con nuclei en busca de panels de login"
+  echo "-nuclei_exposures: Realiza scaneos con nuclei en busca de informacion expuesta"
+  echo "-nuclei_misc: Realiza scaneos con nuclei en busca de misc"
+  echo "-nuclei_misconfig: Realiza scaneos con nuclei en busca de misconfiguration"
+  echo "-nuclei_takeovers: Realiza scaneos con nuclei en busca de posibles dns takeover"
+  echo "-nuclei_tech: Realiza scaneos con nuclei en busca de deteccion de tecnologias usadas"
+  echo "-nuclei_vuln: Realiza scaneos con nuclei en busca de vulnerabilidades varias"
+  echo "-cors: Analiza si las url son vulnerables a Cors"
+  echo "-nmap: Realiza scan a todos los puertos de manera agresiva en todos los subdominios"
+  echo "-crlf: Realiza busqueda de vulnerabilidad CRLF"
+  echo "-or: Realiza la busqueda de Open Redirecg"
+  echo "-output: Envia la data recopilada al nodo de ELK"
+
+}
+
+logo
+# Verificar si se pasaron argumentos
+if [ $# -eq 0 ]; then
+  echo "${red}Debe pasar al menos un argumento."
+  flags
+  exit 1
+fi
+
+# Variables de control
+domain=""
+recon=false
+wayback=false
+dirsearch=false
+nuclei_cves=false
+nuclei_dlogins=false
+nuclei_panels=false
+nuclei_exposures=false
+nuclei_misc=false
+nuclei_misconfig=false
+nuclei_takeovers=false
+nuclei_tech=false
+nuclei_vuln=false
+cors=false
+nmap=false
+crlf=false
+or=false
+output=false
+
+while [[ $# -gt 0 ]]; do
+    key="$1"
+
+    case $key in
+
+   -domain)
+         if [ -z "$2" ]; then
+        echo "${red}Falta el argumento para -domain."
+        flags
+        exit 1
+      fi
+
+      domain="$2"
+      shift 2
+      ;;
+
+    -recon)
+      recon=true
+      shift
+      ;;
+    -wayback)
+      wayback=true
+      shift
+      ;;
+    -dirsearch)
+      dirsearch=true
+      shift
+      ;;
+    -nuclei_cves)
+      nuclei_cves=true
+      shift
+      ;;
+    -nuclei_dlogins)
+      nuclei_dlogins=true
+      shift
+      ;;
+    -nuclei_panels)
+      nuclei_panels=true
+      shift
+      ;;
+    -nuclei_exposures)
+      nuclei_exposures=true
+      shift
+      ;;
+    -nuclei_misc)
+      nuclei_misc=true
+      shift
+      ;;
+    -nuclei_misconfig)
+      nuclei_misconfig=true
+      shift
+      ;;
+    -nuclei_takeovers)
+      nuclei_takeovers=true
+      shift
+      ;;
+    -nuclei_tech)
+      nuclei_tech=true
+      shift
+      ;;
+    -nuclei_vuln)
+      nuclei_vuln=true
+      shift
+      ;;
+    -cors)
+      cors=true
+      shift
+      ;;
+    -nmap)
+      nmap=true
+      shift
+      ;;
+    -crlf)
+      crlf=true
+      shift
+      ;;
+    -or)
+      or=true
+      shift
+      ;;
+    -output)
+      output=true
+      shift
+      ;;
+    *)
+      echo "${red}Argumento invalido: $key"
+      flags
+      exit 1
+      ;;
+  esac
+done
+
+# Ejecutar tareas segun los flags
 if [ "$recon" = true ]; then
 
   if [ -z "${domain}" ]; then
