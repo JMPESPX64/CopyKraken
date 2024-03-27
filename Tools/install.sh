@@ -34,7 +34,7 @@ cd /root/tools/aquatone_dir
 latest_version_aquatone=$(curl -s https://api.github.com/repos/michenriksen/aquatone/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 download_link_aquatone="https://github.com/michenriksen/aquatone/releases/download/${latest_version_aquatone}/aquatone_linux_amd64_$(echo $latest_version_aquatone | tr -d 'v').zip"
 curl -LO $download_link_aquatone
-unzip /root/tools/aquatone_dir/aquatone_linux_amd64_$(echo $latest_version | tr -d 'v').zip
+unzip /root/tools/aquatone_dir/*.zip
 cp /root/tools/aquatone_dir/aquatone /usr/local/bin/aquatone
 
 # Install SecretFinder
@@ -55,7 +55,7 @@ git clone https://github.com/1ndianl33t/Gf-Patterns /root/tools/Gf-Patterns
 mv /root/tools/Gf-Patterns/*.json /root/.gf
 
 # Custom scripts
-git clone https://github.com/rockysec/customscripts /root/tools
+git clone https://github.com/rockysec/customscripts /root/tools/customscripts
 
 # Go packages
 go install -v github.com/projectdiscovery/chaos-client/cmd/chaos@latest
