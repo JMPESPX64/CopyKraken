@@ -68,5 +68,5 @@ go install github.com/tomnomnom/waybackurls@latest
 go install github.com/tomnomnom/gf@latest
 go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
 go install github.com/tomnomnom/assetfinder@latest
-mv /root/go/bin/* /usr/loca/bin/
+cp /root/go/bin/* /usr/local/bin/
 
