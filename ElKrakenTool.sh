@@ -1,32 +1,25 @@
 #!/bin/bash
-
-
-recon=true
-notify=true 
+############################################
+#                                          #
+#     Your APITokens and Variables here    #
+#                                          #
+############################################
+dirsearchExtensions="sql,txt,zip,jsp,log,logs,old,tar.gz,gz,tar,tgz,bkp,dump,db,php,php3,php4,php5,,xml,py,asp,aspx,rar,do,1,asmx,rar,key,gpg,asc,pl,js,shtm,shtml,phtm,phtml,jhtml,cfm,cfml,rb,cfg,pdf,doc,docx,xls,xlsx,conf"
+tokenSlack="YOUR_TOKEN"
+channelSlack="YOUR_CHANNEL"
+directory_tools=~/tools
 directory_data=/root
-tools_dir=$directory_data/tools
-domain=$2
+ssh_conection="user@ipadd:/folder" ##reemplazar user, ipaddr y folder por los datos de tu servidor repositorio de resultados de escaneo
+########################################
 
-function notify {
-    if [ "$notify" = true ]
-    then
-        if [ $(($(date +%s) - lastNotified)) -le 3 ]
-        then
-            echo "[!] Notifying too quickly, sleeping to avoid skipped notifications..."
-            sleep 3
-        fi
 
-        # Format string to escape special characters and send message through Telegram API.
-        if [ -z "$DOMAIN" ]
-        then
-            message=`echo -ne "*BugBountyScanner:* $1" | sed 's/[^a-zA-Z 0-9*_]/\\\\&/g'`
-        else
-            message=`echo -ne "*BugBountyScanner [$DOMAIN]:* $1" | sed 's/[^a-zA-Z 0-9*_]/\\\\&/g'`
-        fi
-    
-        curl -s -X POST "https://api.telegram.org/bot$telegram_api_key/sendMessage" -d chat_id="$telegram_chat_id" -d text="$message" -d parse_mode="MarkdownV2" &> /dev/null
-        lastNotified=$(date +%s)
-    fi
+function logo {
+echo " _____ _       _  ______      _    _  _______ _   _ "
+echo "| ____| |     | |/ /  _ \    / \  | |/ / ____| \ | |"
+echo "|  _| | |     | ' /| |_) |  / _ \ | ' /|  _| |  \| |"
+echo "| |___| |___  | . \|  _ <  / ___ \| . \| |___| |\  |"
+echo "|_____|_____| |_|\_\_| \_\/_/   \_\_|\_\_____|_| \_|"
+echo ""
 }
 
 red=`tput setaf 1`
@@ -223,6 +216,35 @@ if [ "$recon" = true ]; then
      mkdir $directory_data/$domain
 fi
 
+todate=$(date +"%Y-%m-%d")
+path=$(pwd)
+foldername=scan-$todate
+  mkdir $directory_data/$domain/$foldername
+  mkdir $directory_data/$domain/$foldername/nmap
+
+function notify {
+    if [ "$notify" = true ]
+    then
+        if [ $(($(date +%s) - lastNotified)) -le 3 ]
+        then
+            echo "[!] Notifying too quickly, sleeping to avoid skipped notifications..."
+            sleep 3
+        fi
+
+        # Format string to escape special characters and send message through Telegram API.
+        if [ -z "$DOMAIN" ]
+        then
+            message=`echo -ne "*BugBountyScanner:* $1" | sed 's/[^a-zA-Z 0-9*_]/\\\\&/g'`
+        else
+            message=`echo -ne "*BugBountyScanner [$DOMAIN]:* $1" | sed 's/[^a-zA-Z 0-9*_]/\\\\&/g'`
+        fi
+    
+        curl -s -X POST "https://api.telegram.org/bot$telegram_api_key/sendMessage" -d chat_id="$telegram_chat_id" -d text="$message" -d parse_mode="MarkdownV2" &> /dev/null
+        lastNotified=$(date +%s)
+    fi
+}
+
+
 # Find subdomains 
 notify "Listing subdomains"
 mkdir $directory_data/$domain/subdomains
@@ -276,5 +298,6 @@ cat $directory_data/$domain/secrets/js_files.txt | while read url ; do
 	python3 $tools_dir/secretfinder/SecretFinder.py -i $url -o $directory_data/$domain/secrets/results.html
 done
 
-zip -r $directory_data/results_of_scan_$domain.zip $directory_data/$domain
+zip -r results.zip $directory_data/$domain
 notify "The scan has finished"
+exit 0
