@@ -1,8 +1,8 @@
 #!/bin/bash
 
+domain=$1
 notify=true 
-directory_data=/root 
-mkdir $directory_data/tools
+directory_data=/root
 tools_dir=$directory_data/tools
 mkdir -p $directory_data/$domain/subdomains
 mkdir $directory_data/$domain/httpx_info
