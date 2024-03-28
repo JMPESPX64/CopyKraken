@@ -18,8 +18,7 @@ sudo apt install -y git
 sudo apt install -y rename
 sudo apt install -y xargs
 sudo apt install -y chromium-l10n
-sudo snap install chromium-browser
-mv $(command -v chromium-browser) /snap/bin/chromium
+sudo snap install chromium
 sudo apt install -y golang
 sudo apt install -y libpcap-dev
 sudo apt install -y tmux
