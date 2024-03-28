@@ -17,8 +17,9 @@ sudo apt install -y python3-dnspython
 sudo apt install -y git
 sudo apt install -y rename
 sudo apt install -y xargs
-sudo apt install -y chromium-l10n chromium-browser
-mv $(command -v chromium-browser) /usr/bin/chromium
+sudo apt install -y chromium-l10n
+sudo snap install chromium-browser
+mv $(command -v chromium-browser) /snap/bin/chromium
 sudo apt install -y golang
 sudo apt install -y libpcap-dev
 sudo apt install -y tmux
