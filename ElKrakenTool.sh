@@ -69,9 +69,6 @@ python3 $tools_dirs/Corsy/corsy.py -i $directory_data/$domain/httpx_info/alive_s
 # Find crlf
 notify "Search for CRLF"
 crlfuzz -l $directory_data/$domain/httpx_info/alive_subdomains.txt -o $directory_data/$domain/vulns/crlf.txt
-crlfuzz -l $directory_data/$domain/wayback_urls/urls.txt -o $directory_data/$domain/vulns/crlf2.txt
-cat $directory_data/$domain/vulns/crlf2.txt | anew $directory_data/$domain/vulns/crlf.txt
-rm $directory_data/$domain/vulns/crlf2.txt
 
 # Find secrets
 notify "Search secrets"
@@ -82,3 +79,4 @@ done
 
 zip -r results.zip $directory_data/$domain
 notify "The scan has finished"
+notify "The ip adress is -> $(ip addr show eth0 | grep inet | awk 'NR==1' | cut -d '/' -f1 | tr -d 'inet ')"
